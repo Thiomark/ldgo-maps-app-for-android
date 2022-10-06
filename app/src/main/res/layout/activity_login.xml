@@ -107,12 +107,13 @@
             android:text="Dont have an Account?"
             android:textColor="@color/grey" />
 
-        <TextView
+        <Button
+            android:id="@+id/btnSignUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:text="SignUp"
-            android:textColor="@color/grey" />
+            android:layout_weight="1"
+            android:paddingBottom="0dp"
+            android:text="Sign Up" />
 
     </LinearLayout>
 

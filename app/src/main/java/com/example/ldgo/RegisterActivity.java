@@ -7,21 +7,21 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class ProfileActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
-    Button btnGoToHome;
+    Button btnSignIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_register);
 
-        btnGoToHome = findViewById(R.id.btnGoToHome);
+        btnSignIn = findViewById(R.id.btnSignIn);
 
-        btnGoToHome.setOnClickListener(new View.OnClickListener() {
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });

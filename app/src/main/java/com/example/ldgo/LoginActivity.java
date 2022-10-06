@@ -18,6 +18,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText inputEmail;
     EditText inputPassword;
     Button btnlogin;
+    Button btnSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,22 +29,27 @@ public class LoginActivity extends AppCompatActivity {
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
         btnlogin = findViewById(R.id.btnlogin);
+        btnSignUp = findViewById(R.id.btnSignUp);
 
         //Assigning an eventListener to Button
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (inputEmail.getText().toString().equals("1234") && inputPassword.getText().toString().equals("1234"))
-                {
-                    //Opening the next activity
-                    Intent intent = new Intent(LoginActivity.this,MapsActivity.class);
-                    //startActivity(intent);
-                    startActivity(intent);
+//              if (inputEmail.getText().toString().equals("1234") && inputPassword.getText().toString().equals("1234"))
 
-                    //A message is displayed to user giving them feedback
-                    Toast.makeText(LoginActivity.this,"Login Successful", Toast.LENGTH_SHORT).show();
-                }else
-                    Toast.makeText(LoginActivity.this,"Login Failed", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                startActivity(intent);
+
+                Toast.makeText(LoginActivity.this,"Login Successful", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
             }
         });
 
