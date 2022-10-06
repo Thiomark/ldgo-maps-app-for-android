@@ -25,7 +25,8 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText inputEmail, inputPassword;
-    private Button btnLogin, btnSignUp;
+    private Button btnLogin;
+    private TextView btnSignUp;
     private SharedPreferences sp;
 
     private static String jwt, username;
@@ -37,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
 
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
-        btnLogin = findViewById(R.id.btnlogin);
+        btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
 
         sp = getSharedPreferences("user", Context.MODE_PRIVATE);
@@ -76,9 +77,9 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     String fetchedJwt = response.body().getJwt();
-                    String fetchedUsername = "Thiomark";
+                    String fetchedUsername = "ChangeName";
 
-                    saveData(fetchedJwt, "Thiomark");
+                    saveData(fetchedJwt, "ChangeName");
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     startActivity(intent);
                 }
@@ -106,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         String username = sp.getString( "jwt", "");
         if(username != null && !username.trim().isEmpty()) {
             Intent intent = new Intent(this, HomeActivity.class);
-            startActivity(intent);
+            //startActivity(intent);
         }
 
     }

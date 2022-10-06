@@ -8,4 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#797979</color>
+    <color name="btn_gray">#393939</color>
+    <color name="txt_gray">#707070</color>
+    <color name="txt_border">#E1E1E1</color>
 </resources>
