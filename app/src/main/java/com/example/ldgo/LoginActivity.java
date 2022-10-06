@@ -24,9 +24,7 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    //Creating controls in memory, for referencing whats on our layout
     private EditText inputEmail, inputPassword;
-    private TextView textView;
     private Button btnLogin, btnSignUp;
     private SharedPreferences sp;
 
@@ -41,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
         inputPassword = findViewById(R.id.inputPassword);
         btnLogin = findViewById(R.id.btnlogin);
         btnSignUp = findViewById(R.id.btnSignUp);
-        textView = (TextView) findViewById(R.id.logo);
 
         sp = getSharedPreferences("user", Context.MODE_PRIVATE);
 
@@ -83,8 +80,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     saveData(fetchedJwt, "Thiomark");
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    intent.putExtra("jwt", fetchedJwt);
-                    intent.putExtra("username", fetchedUsername);
                     startActivity(intent);
                 }
 
@@ -104,17 +99,15 @@ public class LoginActivity extends AppCompatActivity {
         editor.commit();
 
         Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show();
-
-        updateViews("Login");
     }
 
     public void loadData() {
         sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-        String username = sp.getString( "username", "");
-        updateViews(username);
-    }
+        String username = sp.getString( "jwt", "");
+        if(username != null && !username.trim().isEmpty()) {
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+        }
 
-    public void updateViews(String username) {
-        textView.setText(username);
     }
 }

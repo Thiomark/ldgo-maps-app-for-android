@@ -2,16 +2,19 @@ package com.example.ldgo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class HomeActivity extends AppCompatActivity {
 
-    Button mapsBtn;
-    Button profileBtn;
-    Button btnGoToFavourites;
+    private Button mapsBtn, profileBtn, btnGoToFavourites;
+    private TextView username;
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +24,11 @@ public class HomeActivity extends AppCompatActivity {
         mapsBtn = findViewById(R.id.btnGoToMaps);
         profileBtn = findViewById(R.id.btnGoToProfile);
         btnGoToFavourites = findViewById(R.id.btnGoToFavourites);
+        username = findViewById(R.id.username);
+
+        sp = getSharedPreferences("user", Context.MODE_PRIVATE);
+
+        loadData();
 
         mapsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,5 +53,11 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    public void loadData() {
+        sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+        String username = sp.getString( "username", "");
+        this.username.setText(username);
     }
 }
