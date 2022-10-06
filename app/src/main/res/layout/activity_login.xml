@@ -29,7 +29,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sign up"
+                android:text="Sign In"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
@@ -84,8 +84,8 @@
                 android:ems="10"
                 android:drawableLeft="@drawable/ic_password"
                 android:drawablePadding="10dp"
+                android:inputType="textPassword"
                 android:hint="enter your password"
-                android:inputType="textPersonName"
                 android:padding="20dp" />
 
         </LinearLayout>
