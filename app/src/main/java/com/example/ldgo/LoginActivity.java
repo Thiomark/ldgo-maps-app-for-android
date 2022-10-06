@@ -2,7 +2,9 @@ package com.example.ldgo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -23,23 +25,28 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     //Creating controls in memory, for referencing whats on our layout
-    EditText inputEmail;
-    EditText inputPassword;
-    Button btnLogin;
-    Button btnSignUp;
+    private EditText inputEmail, inputPassword;
+    private TextView textView;
+    private Button btnLogin, btnSignUp;
+    private SharedPreferences sp;
+
+    private static String jwt, username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //Linking and Assigning data/values/functionality to our created controls
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
         btnLogin = findViewById(R.id.btnlogin);
         btnSignUp = findViewById(R.id.btnSignUp);
+        textView = (TextView) findViewById(R.id.logo);
 
-        //Assigning an eventListener to Button
+        sp = getSharedPreferences("user", Context.MODE_PRIVATE);
+
+        loadData();
+
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,18 +61,14 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 
     private void btnSendLoginRequest(){
         if (TextUtils.isEmpty(inputEmail.getText().toString()) || TextUtils.isEmpty(inputPassword.getText().toString())){
             Toast.makeText(LoginActivity.this, "Please enter all fields!!", Toast.LENGTH_LONG).show();
         }else{
-            String username = inputEmail.getText().toString();
-            String password = inputPassword.getText().toString();
-
             LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
-            Call<User> call = ldgoApi.login(username, password);
+            Call<User> call = ldgoApi.login(inputEmail.getText().toString(), inputPassword.getText().toString());
 
             call.enqueue(new Callback<User>() {
                 @Override
@@ -75,7 +78,13 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
 
+                    String fetchedJwt = response.body().getJwt();
+                    String fetchedUsername = "Thiomark";
+
+                    saveData(fetchedJwt, "Thiomark");
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    intent.putExtra("jwt", fetchedJwt);
+                    intent.putExtra("username", fetchedUsername);
                     startActivity(intent);
                 }
 
@@ -85,5 +94,27 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public void saveData(String jwt, String username) {
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putString("jwt", jwt);
+        editor.putString("username", username);
+        editor.commit();
+
+        Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show();
+
+        updateViews("Login");
+    }
+
+    public void loadData() {
+        sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+        String username = sp.getString( "username", "");
+        updateViews(username);
+    }
+
+    public void updateViews(String username) {
+        textView.setText(username);
     }
 }
