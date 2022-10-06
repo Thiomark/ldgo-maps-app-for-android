@@ -10,5 +10,13 @@ import retrofit2.http.POST;
 public interface LdgoApi {
     @FormUrlEncoded
     @POST("auth/local")
-    Call<User> login(@Field("identifier") String identifier, @Field("password") String password);
+    Call<User> login(@Field("identifier") String identifier,
+                     @Field("password") String password);
+
+    @FormUrlEncoded
+    @POST("auth/local/register")
+    Call<User> register(@Field("name") String name,
+                     @Field("email") String email,
+                     @Field("username") String username,
+                     @Field("password") String password);
 }
