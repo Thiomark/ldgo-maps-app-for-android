@@ -4,20 +4,28 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ldgo.entities.User;
+import com.example.ldgo.utils.LdgoApi;
+import com.example.ldgo.utils.RetrofitClient;
 import com.google.android.material.button.MaterialButton;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
     //Creating controls in memory, for referencing whats on our layout
     EditText inputEmail;
     EditText inputPassword;
-    Button btnlogin;
+    Button btnLogin;
     Button btnSignUp;
 
     @Override
@@ -28,20 +36,14 @@ public class LoginActivity extends AppCompatActivity {
         //Linking and Assigning data/values/functionality to our created controls
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
-        btnlogin = findViewById(R.id.btnlogin);
+        btnLogin = findViewById(R.id.btnlogin);
         btnSignUp = findViewById(R.id.btnSignUp);
 
         //Assigning an eventListener to Button
-        btnlogin.setOnClickListener(new View.OnClickListener() {
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//              if (inputEmail.getText().toString().equals("1234") && inputPassword.getText().toString().equals("1234"))
-
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                startActivity(intent);
-
-                Toast.makeText(LoginActivity.this,"Login Successful", Toast.LENGTH_SHORT).show();
-
+                btnSendLoginRequest();
             }
         });
 
@@ -53,5 +55,35 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void btnSendLoginRequest(){
+        if (TextUtils.isEmpty(inputEmail.getText().toString()) || TextUtils.isEmpty(inputPassword.getText().toString())){
+            Toast.makeText(LoginActivity.this, "Please enter all fields!!", Toast.LENGTH_LONG).show();
+        }else{
+            String username = inputEmail.getText().toString();
+            String password = inputPassword.getText().toString();
+
+            LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
+            Call<User> call = ldgoApi.login(username, password);
+
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (!response.isSuccessful()) {
+                        Toast.makeText(LoginActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT);
+                }
+            });
+        }
     }
 }
