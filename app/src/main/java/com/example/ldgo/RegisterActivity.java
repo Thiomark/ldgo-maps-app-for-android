@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ldgo.entities.User;
+import com.example.ldgo.entities.UserLogin;
 import com.example.ldgo.utils.LdgoApi;
 import com.example.ldgo.utils.RetrofitClient;
 
@@ -68,24 +70,58 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(this, "Please enter all fields!!", Toast.LENGTH_LONG).show();
         }else{
             LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
-            String name = inputEmail.getText().toString();
+            String name = inputName.getText().toString();
             String email = inputEmail.getText().toString();
-            String username = inputEmail.getText().toString();
-            String password = inputEmail.getText().toString();
-            Call<User> call = ldgoApi.register(name, email, username, password);
+            String username = inputUsername.getText().toString();
+            String password = inputPassword.getText().toString();
+            Call<UserLogin> call = ldgoApi.register(name, email, username, password);
 
-            call.enqueue(new Callback<User>() {
+            call.enqueue(new Callback<UserLogin>() {
                 @Override
-                public void onResponse(Call<User> call, Response<User> response) {
+                public void onResponse(Call<UserLogin> call, Response<UserLogin> response) {
                     if (!response.isSuccessful()) {
+                        Log.d("log-error", response.message());
                         Toast.makeText(RegisterActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    String fetchedJwt = response.body().getJwt();
-                    String fetchedUsername = "ChangeName";
+                    saveData(response.body().getUser().getUsername(), response.body().getUser().getId(), response.body().getJwt());
+                }
 
-                    saveData(fetchedJwt, "ChangeName");
+                @Override
+                public void onFailure(Call<UserLogin> call, Throwable t) {
+                    Log.d("log-fail", t.getMessage());
+                    Toast.makeText(RegisterActivity.this, t.getMessage(), Toast.LENGTH_SHORT);
+                }
+            });
+
+        }
+    }
+
+    public void saveData(String username, String userID, String jwt) {
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putString("username", username);
+        editor.putString("userID", userID);
+        editor.putString("jwt", "Bearer "+ jwt);
+        editor.commit();
+
+        loadData();
+    }
+
+    public void loadData() {
+        sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+        String jwt = sp.getString( "jwt", "");
+
+        if(jwt != null && !jwt.trim().isEmpty()) {
+            LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
+            Call<User> call = ldgoApi.getMe(jwt);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (!response.isSuccessful()) {
+                        return;
+                    }
                     Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
                     startActivity(intent);
                 }
@@ -95,16 +131,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, t.getMessage(), Toast.LENGTH_SHORT);
                 }
             });
+
         }
-    }
-
-    public void saveData(String jwt, String username) {
-        SharedPreferences.Editor editor = sp.edit();
-
-        editor.putString("jwt", jwt);
-        editor.putString("username", username);
-        editor.commit();
-
-        Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show();
     }
 }

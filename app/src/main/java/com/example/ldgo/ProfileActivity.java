@@ -29,9 +29,9 @@ import retrofit2.Response;
 public class ProfileActivity extends AppCompatActivity {
 
     ImageButton btnGoToHome;
-    TextView username, email, name, language, landmark;
+    TextView username, email, name, language, landmark, preferredSystem;
     LinearLayout infoSection;
-    CardView btnLogout;
+    CardView btnLogout, btnEditProfile;
     ToggleButton useMetric;
     private SharedPreferences sp;
     private User user;
@@ -47,6 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         infoSection = findViewById(R.id.infoSection);
         infoSection.setVisibility(View.GONE);
+        btnEditProfile = findViewById(R.id.btnEditProfile);
 
         btnGoToHome = findViewById(R.id.btnGoToHome);
         btnLogout = findViewById(R.id.btnLogout);
@@ -56,6 +57,7 @@ public class ProfileActivity extends AppCompatActivity {
         language = findViewById(R.id.language);
         useMetric = findViewById(R.id.useMetric);
         landmark = findViewById(R.id.landmark);
+        preferredSystem= findViewById(R.id.preferredSystem);
 
         sp = getSharedPreferences("user", Context.MODE_PRIVATE);
 
@@ -66,6 +68,14 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnEditProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ProfileActivity.this, EditUserActivity.class);
                 startActivity(intent);
             }
         });
@@ -82,7 +92,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 try{
                     user.setUseMetric(isChecked);
-                    Call<User> call = ldgoApi.updateUserField(user.getId(), "jim", "jim@jim.com", "jim", isChecked);
+                    Call<User> call = ldgoApi.updateUserField(user.getId(), user.getName(), user.getEmail(), user.getUsername(), user.getUseMetric());
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
@@ -144,7 +154,8 @@ public class ProfileActivity extends AppCompatActivity {
         email.setText(user.getEmail().toString());
         language.setText(user.getLanguage().toString());
         landmark.setText(user.getLandmark().toString());
-        useMetric.setText(user.getUseMetric() ? "Metric System (kilometres)" : "Imperial System (miles)");
+        useMetric.setText(user.getUseMetric() ? "Metric System" : "Imperial System");
+        preferredSystem.setText(user.getUseMetric() ? "(kilometres)" : "(miles)");
         infoSection.setVisibility(View.VISIBLE);
         loadingDialogBar.HideDialog();
     }

@@ -23,7 +23,7 @@ public interface LdgoApi {
 
     @FormUrlEncoded
     @POST("auth/local/register")
-    Call<User> register(@Field("name") String name,
+    Call<UserLogin> register(@Field("name") String name,
                      @Field("email") String email,
                      @Field("username") String username,
                      @Field("password") String password);

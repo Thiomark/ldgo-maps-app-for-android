@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
 
-                    saveData(response.body().getUser().getUsername(), response.body().getUser().getId());
+                    saveData(response.body().getUser().getUsername(), response.body().getUser().getId(), response.body().getJwt());
                 }
 
                 @Override
@@ -89,37 +89,15 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT);
                 }
             });
-//            call.enqueue(new Callback<ResponseBody>() {
-//                @Override
-//                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                    if (!response.isSuccessful()) {
-//                        Log.d("log-error", response.message());
-//                        Toast.makeText(LoginActivity.this, response.message(), Toast.LENGTH_SHORT).show();
-//                        return;
-//                    }
-//
-//                    String fetchedJwt = response.body().getJwt();
-//                    String fetchedUsername = "ChangeName";
-////                    String fetchedID = response.b
-//
-//                    saveData(fetchedJwt, "ChangeName", response.body().getId());
-////                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-////                    startActivity(intent);
-//                }
-//
-//                @Override
-//                public void onFailure(Call<User> call, Throwable t) {
-//
-//                }
-//            });
         }
     }
 
-    public void saveData(String username, String userID) {
+    public void saveData(String username, String userID, String jwt) {
         SharedPreferences.Editor editor = sp.edit();
 
         editor.putString("username", username);
         editor.putString("userID", userID);
+        editor.putString("jwt", "Bearer "+ jwt);
         editor.commit();
 
         loadData();
@@ -127,16 +105,15 @@ public class LoginActivity extends AppCompatActivity {
 
     public void loadData() {
         sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-        String userID = sp.getString( "userID", "");
+        String jwt = sp.getString( "jwt", "");
 
-        if(userID != null && !userID.trim().isEmpty()) {
+        if(jwt != null && !jwt.trim().isEmpty()) {
             LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
-            Call<User> call = ldgoApi.getUser(userID);
+            Call<User> call = ldgoApi.getMe(jwt);
             call.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (!response.isSuccessful()) {
-
                         return;
                     }
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
