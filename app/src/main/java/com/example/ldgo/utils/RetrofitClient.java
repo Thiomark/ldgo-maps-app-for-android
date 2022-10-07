@@ -10,8 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     private static Retrofit retrofit;
-    private static final String ngrok = "https://ldgo-api.herokuapp.com";
-    private static final String BASE_URL = ngrok.concat("/api/");
+    private static final String BASE_URL = "https://ldgo-api.herokuapp.com/api/";
 
     public static Retrofit getRetrofitInstance(){
 

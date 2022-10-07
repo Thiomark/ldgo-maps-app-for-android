@@ -31,17 +31,16 @@ public interface LdgoApi {
     @GET("users/{id}")
     Call<User> getUser(@Path("id") String id);
 
-    @PUT("/users/{id}")
+    @PUT("users/{id}")
     Call<User> updateUser(@Path("id") String id, @Body User user);
 
-    @GET("/users/me")
+    @GET("users/me")
     Call<User> getMe(@Header("Authorization") String token);
 
-    @PUT("/users/{id}")
+    @FormUrlEncoded
+    @PUT("users/{id}")
     Call<User> updateUserField(@Path("id") String id, @Field("name") String name,
                         @Field("email") String email,
                         @Field("username") String username,
-                        @Field("useMetric") Boolean useMetric,
-                        @Field("language") String language,
-                        @Field("landmark") String landmark);
+                        @Field("useMetric") Boolean useMetric);
 }

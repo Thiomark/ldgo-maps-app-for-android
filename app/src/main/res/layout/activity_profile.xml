@@ -57,7 +57,7 @@
             android:layout_height="wrap_content">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/linearLayoutCompat"
+                android:id="@+id/btnLogout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -90,7 +90,7 @@
                 android:textOn="Metric System (kilometres)"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat" />
+                app:layout_constraintTop_toBottomOf="@+id/btnLogout" />
 
             <TextView
                 android:layout_width="wrap_content"

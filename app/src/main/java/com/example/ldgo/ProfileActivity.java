@@ -1,6 +1,7 @@
 package com.example.ldgo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,7 @@ public class ProfileActivity extends AppCompatActivity {
     ImageButton btnGoToHome;
     TextView username, email, name, language, landmark;
     LinearLayout infoSection;
+    CardView btnLogout;
     ToggleButton useMetric;
     private SharedPreferences sp;
     private User user;
@@ -47,6 +49,7 @@ public class ProfileActivity extends AppCompatActivity {
         infoSection.setVisibility(View.GONE);
 
         btnGoToHome = findViewById(R.id.btnGoToHome);
+        btnLogout = findViewById(R.id.btnLogout);
         username = findViewById(R.id.username);
         email = findViewById(R.id.email);
         name = findViewById(R.id.name);
@@ -67,34 +70,50 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                logout();
+            }
+        });
+
         useMetric.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 try{
-                    Log.d("error", "errorrr");
-//                    user.setUseMetric(isChecked);
-//                    Call<User> call = ldgoApi.updateUser(user.getId(), user);
-//                    call.enqueue(new Callback<User>() {
-//                        @Override
-//                        public void onResponse(Call<User> call, Response<User> response) {
-//                            if (!response.isSuccessful()) {
-////                                Toast.makeText(ProfileActivity.this, response.message(), Toast.LENGTH_SHORT).show();
-//                                return;
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onFailure(Call<User> call, Throwable t) {
-////                            Toast.makeText(ProfileActivity.this, "t.getMessage()", Toast.LENGTH_SHORT).show();
-////                            Log.d("success", "t.getMessage()");
-//                        }
-//                    });
+                    user.setUseMetric(isChecked);
+                    Call<User> call = ldgoApi.updateUserField(user.getId(), "jim", "jim@jim.com", "jim", isChecked);
+                    call.enqueue(new Callback<User>() {
+                        @Override
+                        public void onResponse(Call<User> call, Response<User> response) {
+                            if (!response.isSuccessful()) {
+                                Toast.makeText(ProfileActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                                Log.d("errrv", response.message());
+                                return;
+                            }
+                            setUser(response.body());
+                        }
+
+                        @Override
+                        public void onFailure(Call<User> call, Throwable t) {
+                            Toast.makeText(ProfileActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.d("errry", t.getMessage());
+                        }
+                    });
                 }catch (Exception e){
-//                    Log.d("success", e.getMessage());
+                    Log.d("errri", e.getMessage());
                 }
 
             }
         });
+    }
+
+    private void logout () {
+        SharedPreferences.Editor editor = sp.edit();
+        editor.clear();
+        editor.commit();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 
     private void fetchUser (LdgoApi ldgoApi) {
@@ -105,12 +124,8 @@ public class ProfileActivity extends AppCompatActivity {
             public void onResponse(Call<User> call, Response<User> response) {
                 if (!response.isSuccessful()) {
                     Toast.makeText(ProfileActivity.this, response.message(), Toast.LENGTH_SHORT).show();
-                    infoSection.setVisibility(View.VISIBLE);
-                    loadingDialogBar.HideDialog();
                     return;
                 }
-
-                Log.d("ggg", response.body().getUsername());
 
                 setUser(response.body());
             }
@@ -122,12 +137,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void logout () {
-        loadingDialogBar.HideDialog();
-    }
-
     private void setUser(User user){
-
         this.user = user;
         name.setText(user.getName().toString());
         username.setText(user.getUsername().toString());
