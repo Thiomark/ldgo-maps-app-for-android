@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,10 +15,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ldgo.entities.User;
+import com.example.ldgo.entities.UserLogin;
 import com.example.ldgo.utils.LdgoApi;
 import com.example.ldgo.utils.RetrofitClient;
 import com.google.android.material.button.MaterialButton;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,19 +70,75 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(LoginActivity.this, "Please enter all fields!!", Toast.LENGTH_LONG).show();
         }else{
             LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
-            Call<User> call = ldgoApi.login(inputEmail.getText().toString(), inputPassword.getText().toString());
-            call.enqueue(new Callback<User>() {
+            Call<UserLogin> call = ldgoApi.login(inputEmail.getText().toString(), inputPassword.getText().toString());
+            call.enqueue(new Callback<UserLogin>() {
                 @Override
-                public void onResponse(Call<User> call, Response<User> response) {
+                public void onResponse(Call<UserLogin> call, Response<UserLogin> response) {
                     if (!response.isSuccessful()) {
+                        Log.d("log-error", response.message());
                         Toast.makeText(LoginActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    String fetchedJwt = response.body().getJwt();
-                    String fetchedUsername = "ChangeName";
+                    saveData(response.body().getUser().getUsername(), response.body().getUser().getId());
+                }
 
-                    saveData(fetchedJwt, "ChangeName");
+                @Override
+                public void onFailure(Call<UserLogin> call, Throwable t) {
+                    Log.d("log-fail", t.getMessage());
+                    Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT);
+                }
+            });
+//            call.enqueue(new Callback<ResponseBody>() {
+//                @Override
+//                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                    if (!response.isSuccessful()) {
+//                        Log.d("log-error", response.message());
+//                        Toast.makeText(LoginActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//
+//                    String fetchedJwt = response.body().getJwt();
+//                    String fetchedUsername = "ChangeName";
+////                    String fetchedID = response.b
+//
+//                    saveData(fetchedJwt, "ChangeName", response.body().getId());
+////                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+////                    startActivity(intent);
+//                }
+//
+//                @Override
+//                public void onFailure(Call<User> call, Throwable t) {
+//
+//                }
+//            });
+        }
+    }
+
+    public void saveData(String username, String userID) {
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putString("username", username);
+        editor.putString("userID", userID);
+        editor.commit();
+
+        loadData();
+    }
+
+    public void loadData() {
+        sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+        String userID = sp.getString( "userID", "");
+
+        if(userID != null && !userID.trim().isEmpty()) {
+            LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
+            Call<User> call = ldgoApi.getUser(userID);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (!response.isSuccessful()) {
+
+                        return;
+                    }
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     startActivity(intent);
                 }
@@ -86,25 +148,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT);
                 }
             });
-        }
-    }
 
-    public void saveData(String jwt, String username) {
-        SharedPreferences.Editor editor = sp.edit();
-
-        editor.putString("jwt", jwt);
-        editor.putString("username", username);
-        editor.commit();
-
-        Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show();
-    }
-
-    public void loadData() {
-        sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-        String username = sp.getString( "jwt", "");
-        if(username != null && !username.trim().isEmpty()) {
-            Intent intent = new Intent(this, HomeActivity.class);
-            startActivity(intent);
         }
     }
 }

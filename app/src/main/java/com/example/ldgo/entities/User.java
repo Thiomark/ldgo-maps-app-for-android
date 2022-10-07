@@ -1,32 +1,28 @@
 package com.example.ldgo.entities;
 
 public class User {
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private String username; //"username": "joe",
-    private String id; //"id": 4,
-    private String email; // "email": "joe@gmail.com",
-    private String provider; //"provider": "local",
-    private Boolean confirmed; //"confirmed": true,
-    private Boolean blocked; // "blocked": false,
-    private String createdAt; //"createdAt": "2022-10-06T18:39:26.389Z",
-    private String updatedAt; //"updatedAt": "2022-10-06T18:39:26.389Z",
-    private String name; //"name": "Itumeleng Doe",
-    private String language; //"language": "English",
-    private Boolean useMetric; //"useMetric": true,
-    private String landmark; //"landmark": "modern"
+    private String username;
+    private String id;
+    private String email;
+    private String provider;
+    private Boolean confirmed;
+    private Boolean blocked;
+    private String createdAt;
+    private String updatedAt;
+    private String name;
+    private String language;
+    private Boolean useMetric;
+    private String landmark;
     private String jwt;
+
+    public User(User user) {
+        this.email = user.email;
+        this.name = user.name;
+        this.language = user.language;
+        this.useMetric = user.useMetric;
+        this.landmark = user.landmark;
+        this.username = user.username;
+    }
 
     public String getUsername() {
         return username;
@@ -34,6 +30,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getEmail() {
