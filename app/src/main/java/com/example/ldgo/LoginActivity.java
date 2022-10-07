@@ -29,8 +29,6 @@ public class LoginActivity extends AppCompatActivity {
     private TextView btnSignUp;
     private SharedPreferences sp;
 
-    private static String jwt, username;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +65,6 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
             Call<User> call = ldgoApi.login(inputEmail.getText().toString(), inputPassword.getText().toString());
-
             call.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
@@ -107,8 +104,7 @@ public class LoginActivity extends AppCompatActivity {
         String username = sp.getString( "jwt", "");
         if(username != null && !username.trim().isEmpty()) {
             Intent intent = new Intent(this, HomeActivity.class);
-            //startActivity(intent);
+            startActivity(intent);
         }
-
     }
 }

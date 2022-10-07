@@ -5,7 +5,9 @@ import com.example.ldgo.entities.User;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface LdgoApi {
     @FormUrlEncoded
@@ -19,4 +21,7 @@ public interface LdgoApi {
                      @Field("email") String email,
                      @Field("username") String username,
                      @Field("password") String password);
+
+    @GET("users/{id}")
+    Call<User> getUser(@Path("id") String id);
 }
