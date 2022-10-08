@@ -107,44 +107,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-
-
-
-        /*binding = ActivityMapsBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());*/
-
-        goTo = findViewById(R.id.goTo);
-        goTo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LatLng london = new LatLng(51.5072, 0.12);
-                mMap.addMarker(new MarkerOptions().position(london).title("Marker in London"));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(london, 15));
-            }
-        });
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        //Making POI's interactible
-        //setContentView(R.layout.activity_maps);
-        /*SupportMapFragment mapFragment;
-        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);*/
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-
-    /**
-     * Saves the state of the map when the activity is paused.
-     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (map != null) {
@@ -246,8 +210,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                                 lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                             }
                         } else {
-                            Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: %s", task.getException());
                             map.moveCamera(CameraUpdateFactory
                                     .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                             map.getUiSettings().setMyLocationButtonEnabled(false);
@@ -255,9 +217,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 });
             }
-        } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage(), e);
-        }
+        } catch (SecurityException e)  { }
     }
 
     /**
@@ -438,22 +398,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-
-    //Here
-
-    /*@Override
-    public void onMapReady(GoogleMap googleMap) {
-        googleMap.setOnPoiClickListener(this);
-
-        mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-    }*/
-
-    //Still making Point Of Interest Interactable
     @Override
     public void onPoiClick(@NonNull PointOfInterest pointOfInterest) {
         Toast.makeText(this, "Clicked: " +
