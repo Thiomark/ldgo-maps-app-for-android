@@ -21,27 +21,33 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     private static Retrofit retrofit;
-    private static final String BASE_URL = "https://ldgo-api.herokuapp.com/api/";
     private static SharedPreferences sp;
 
     public static Retrofit getRetrofitInstance(){
+        String BASE_URL = "https://ldgo-api.herokuapp.com/api/";
+        return logic(BASE_URL);
+    }
 
-        if (retrofit == null){
-            Gson gson = new GsonBuilder().serializeNulls().create();
+    public static Retrofit getRetrofitInstance2(){
+        String BASE_URL = "https://maps.googleapis.com/maps/api/place/";
+        return logic(BASE_URL);
+    }
 
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+    private static Retrofit logic (String url){
+        Gson gson = new GsonBuilder().serializeNulls().create();
 
-            OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                    .addInterceptor(loggingInterceptor)
-                    .build();
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .client(okHttpClient)
-                    .build();
-        }
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(url)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(okHttpClient)
+                .build();
         return retrofit;
     }
 }

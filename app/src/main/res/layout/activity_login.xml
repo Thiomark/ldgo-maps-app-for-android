@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="30dp"
-            android:paddingVertical="20dp"/>
+            android:paddingVertical="40dp"/>
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -30,18 +30,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sign In"
-                android:layout_marginBottom="10dp"
-                android:textColor="@color/grey"
-                android:textSize="28sp" />
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16dp"
+                android:text="Username or Email"
+                android:layout_marginTop="40dp"
+                android:textColor="@color/black"
+                android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="15dp"
                 android:layout_marginBottom="10dp"
-                android:text="Username or email" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.13" />
             <EditText
                 android:id="@+id/inputEmail"
                 android:layout_width="match_parent"
@@ -60,11 +65,18 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16dp"
+                android:text="Password"
+                android:layout_marginTop="30dp"
+                android:textColor="@color/black"
+                android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="15dp"
                 android:layout_marginBottom="10dp"
-                android:text="Password" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.13" />
+
 
             <EditText
                 android:id="@+id/inputPassword"

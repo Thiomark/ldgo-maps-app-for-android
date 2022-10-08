@@ -5,7 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,13 +19,16 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ldgo.entities.Address;
+import com.example.ldgo.responses.SearchesResponse;
+import com.example.ldgo.utils.LdgoGoogleMapsApi;
+import com.example.ldgo.utils.RetrofitClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -47,24 +50,24 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener {
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
-    Button goTo;
 
     private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap map;
     private CameraPosition cameraPosition;
+    private ArrayList<Address> fetchedSeaches = new ArrayList<>();
+
 
     EditText searchInputField;
 
@@ -98,6 +101,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private ImageButton goToProfile;
     private TextView username;
+    private TextView searches;
     private SharedPreferences sp;
 
 
@@ -115,6 +119,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
         searchInputField = findViewById(R.id.searchInputField);
         goToProfile = findViewById(R.id.goToProfile);
+        searches = findViewById(R.id.searches);
         this.username = findViewById(R.id.username);
 
         sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
@@ -138,7 +143,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if (keyEvent.getAction()==KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
                     String input = searchInputField.getText().toString();
-                    // searchForPlaceOnTheMap(input);
+                     searchForPlaceOnTheMap(input);
                     return true;
                 }
                 return false;
@@ -153,6 +158,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+    }
+
+    private void searchForPlaceOnTheMap(String input) {
+        LdgoGoogleMapsApi api = RetrofitClient.getRetrofitInstance2().create(LdgoGoogleMapsApi.class);
+        Call<SearchesResponse> call = api.searchForPlace(input);
+        call.enqueue(new Callback<SearchesResponse>() {
+            @Override
+            public void onResponse(Call<SearchesResponse> call, Response<SearchesResponse> response) {
+                if(response.isSuccessful()){
+                    fetchedSeaches = response.body().getResults();
+
+                    for(Address adr : fetchedSeaches){
+                        String content = "";
+                        content += adr.getFormatted_address() + "\n";
+                        searches.append(content);
+                    }
+//                    SearchRecyclerViewAdapter sec = new SearchRecyclerViewAdapter(MapsActivity.this, fetchedSeaches);
+//                    searches.setAdapter(sec);
+//                    searches.setLayoutManager(new LinearLayoutManager(MapsActivity.this));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SearchesResponse> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
