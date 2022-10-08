@@ -67,7 +67,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnGoToHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+                Intent intent = new Intent(ProfileActivity.this, MapsActivity.class);
                 startActivity(intent);
             }
         });

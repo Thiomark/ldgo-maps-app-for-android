@@ -122,7 +122,7 @@ public class RegisterActivity extends AppCompatActivity {
                     if (!response.isSuccessful()) {
                         return;
                     }
-                    Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+                    Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
                     startActivity(intent);
                 }
 

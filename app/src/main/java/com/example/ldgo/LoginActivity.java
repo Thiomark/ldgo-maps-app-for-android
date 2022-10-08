@@ -116,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (!response.isSuccessful()) {
                         return;
                     }
-                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                     startActivity(intent);
                 }
 
