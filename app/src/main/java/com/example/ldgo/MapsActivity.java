@@ -7,16 +7,22 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +50,12 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener {
 
     private GoogleMap mMap;
@@ -53,6 +65,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap map;
     private CameraPosition cameraPosition;
+
+    EditText searchInputField;
 
     // The entry point to the Places API.
     private PlacesClient placesClient;
@@ -82,6 +96,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List[] likelyPlaceAttributions;
     private LatLng[] likelyPlaceLatLngs;
 
+    private ImageButton goToProfile;
+    private TextView username;
+    private SharedPreferences sp;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +113,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Retrieve the content view that renders the map.
         setContentView(R.layout.activity_maps);
+        searchInputField = findViewById(R.id.searchInputField);
+        goToProfile = findViewById(R.id.goToProfile);
+        this.username = findViewById(R.id.username);
+
+        sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+        String username = sp.getString( "username", "");
+        this.username.setText(username);
 
         // Construct a PlacesClient
         Places.initialize(getApplicationContext(), BuildConfig.MAPS_API_KEY);
@@ -107,6 +132,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        searchInputField.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (keyEvent.getAction()==KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
+                    String input = searchInputField.getText().toString();
+                    // searchForPlaceOnTheMap(input);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        goToProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MapsActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override
