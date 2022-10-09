@@ -1,7 +1,9 @@
 package com.example.ldgo.utils;
 
+import com.example.ldgo.entities.FavouriteLocation;
 import com.example.ldgo.entities.User;
 import com.example.ldgo.entities.UserLogin;
+import com.example.ldgo.responses.GetFavouriteResponses;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -30,6 +32,9 @@ public interface LdgoApi {
 
     @GET("users/{id}")
     Call<User> getUser(@Path("id") String id);
+
+    @POST("favourites")
+    Call<GetFavouriteResponses> addFavouritesLocations(@Body FavouriteLocation favouriteLocation);
 
     @PUT("users/{id}")
     Call<User> updateUser(@Path("id") String id, @Body User user);

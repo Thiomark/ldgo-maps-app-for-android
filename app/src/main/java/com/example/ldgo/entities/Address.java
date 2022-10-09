@@ -1,12 +1,48 @@
 package com.example.ldgo.entities;
 
+import java.util.ArrayList;
+
 public class Address {
     String formatted_address;
     Geometry geometry;
+    String name;
+    String place_id;
+    ArrayList<Photos> photos;
 
-    public Address(String formatted_address, Geometry geometry) {
+    public Address(String formatted_address, String name, String place_id, ArrayList<Photos> photos, Geometry geometry) {
         this.formatted_address = formatted_address;
+        this.name = name;
+        this.place_id = place_id;
+        this.photos = photos;
         this.geometry = geometry;
+    }
+
+    public String getFirstImage(){
+        return photos.get(0).photo_reference;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPlace_id() {
+        return place_id;
+    }
+
+    public void setPlace_id(String place_id) {
+        this.place_id = place_id;
+    }
+
+    public ArrayList<Photos> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(ArrayList<Photos> photos) {
+        this.photos = photos;
     }
 
     public String getFormatted_address() {
@@ -65,5 +101,31 @@ class Location {
 
     public void setLng(String lng) {
         this.lng = lng;
+    }
+}
+
+class Photos {
+    int height;
+    String photo_reference;
+
+    public Photos(int height, String photo_reference) {
+        this.height = height;
+        this.photo_reference = photo_reference;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public String getPhoto_reference() {
+        return photo_reference;
+    }
+
+    public void setPhoto_reference(String photo_reference) {
+        this.photo_reference = photo_reference;
     }
 }

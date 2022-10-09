@@ -87,7 +87,7 @@
                 android:drawableLeft="@drawable/ic_password"
                 android:drawablePadding="10dp"
                 android:hint="enter your password"
-                android:inputType="textPersonName"
+                android:inputType="textPassword"
                 android:paddingHorizontal="20dp"
                 android:textSize="14dp"
                 android:paddingVertical="14dp" />

@@ -1,6 +1,8 @@
 package com.example.ldgo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.Constraints;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,13 +11,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.example.ldgo.components.RecyclerAdapter;
 import com.example.ldgo.entities.Address;
+import com.example.ldgo.entities.User;
+import com.example.ldgo.responses.GetFavouriteResponses;
 import com.example.ldgo.responses.SearchesResponse;
+import com.example.ldgo.utils.LdgoApi;
 import com.example.ldgo.utils.LdgoGoogleMapsApi;
+import com.example.ldgo.utils.LdgoHelpers;
 import com.example.ldgo.utils.RetrofitClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -39,7 +46,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -57,6 +66,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -66,23 +76,31 @@ import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnPoiClickListener {
 
     private GoogleMap mMap;
     private ArrayList<Address> fetchedSeaches = new ArrayList<>();
     EditText searchInputField;
     ImageButton goToProfile;
     RecyclerView recyclerViewSearches;
+    private RecyclerAdapter.RecyclerViewClickListener listener;
+    ImageView locationImage;
+    TextView locationAddress, locationName;
+    Button cancelBtn, saveLocationBtn;
+    CardView locationSummaryCard;
+    RecyclerAdapter adapter;
 
     // Everything thing below is from the documention
 
     private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap map;
     private CameraPosition cameraPosition;
+    private LdgoHelpers ldgoHelpers;
 
     // The entry point to the Places API.
     private PlacesClient placesClient;
@@ -112,6 +130,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List[] likelyPlaceAttributions;
     private LatLng[] likelyPlaceLatLngs;
 
+    LdgoApi ldgoApi;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,6 +143,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Retrieve the content view that renders the map.
         setContentView(R.layout.activity_maps);
+
+        locationSummaryCard = findViewById(R.id.locationSummaryCard);
+        cancelBtn = findViewById(R.id.cancelBtn);
 
         // Construct a PlacesClient
         Places.initialize(getApplicationContext(), BuildConfig.MAPS_API_KEY);
@@ -139,6 +162,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         goToProfile = findViewById(R.id.goToProfile);
         searchInputField = findViewById(R.id.searchInputField);
         recyclerViewSearches = findViewById(R.id.recyclerViewSearches);
+        saveLocationBtn = findViewById(R.id.saveLocationBtn);
+        ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
 
         searchInputField.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -152,6 +177,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        saveLocationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MapsActivity.this, "Location Saved", Toast.LENGTH_SHORT).show();
+//                Call<GetFavouriteResponses> call = ldgoApi.addFavouritesLocations();
+            }
+        });
+
         goToProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -159,27 +192,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(intent);
             }
         });
-    }
 
-    private void searchForPlaceOnTheMap(String input) {
-        LdgoGoogleMapsApi api = RetrofitClient.getRetrofitInstance2().create(LdgoGoogleMapsApi.class);
-        Call<SearchesResponse> call = api.searchForPlace(input);
-        call.enqueue(new Callback<SearchesResponse>() {
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onResponse(Call<SearchesResponse> call, Response<SearchesResponse> response) {
-                if(response.isSuccessful()){
-                    fetchedSeaches = response.body().getResults();
-                    RecyclerAdapter adapter = new RecyclerAdapter(fetchedSeaches);
-                    RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext());
-                    recyclerViewSearches.setLayoutManager(lm);
-                    recyclerViewSearches.setItemAnimator(new DefaultItemAnimator());
-                    recyclerViewSearches.setAdapter(adapter);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<SearchesResponse> call, Throwable t) {
-
+            public void onClick(View view) {
+                locationSummaryCard.setVisibility(View.GONE);
             }
         });
     }
@@ -227,6 +244,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap map) {
         this.map = map;
+        map.setOnPoiClickListener(this);
 
         // Use a custom info window adapter to handle multiple lines of text in the
         // info window contents.
@@ -477,5 +495,76 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         } catch (SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
         }
+    }
+
+    @Override
+    public void onPoiClick(@NonNull PointOfInterest pointOfInterest) {
+        try{
+//            locationSummaryCard.setVisibility(View.GONE);
+//            fetchedSeaches.clear();
+//            adapter.notifyDataSetChanged();
+            Toast.makeText(this, "Clicked: " +
+                            pointOfInterest.name + "\nPlace ID:" + pointOfInterest +
+                            "\nLatitude:" + pointOfInterest.latLng.latitude +
+                            " Longitude:" + pointOfInterest.latLng.longitude,
+                    Toast.LENGTH_SHORT).show();
+        }catch (Exception e){
+            Log.d("my-error",e.getMessage());
+            Toast.makeText(MapsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void searchForPlaceOnTheMap(String input) {
+        LdgoGoogleMapsApi api = RetrofitClient.getRetrofitInstance2().create(LdgoGoogleMapsApi.class);
+        Call<SearchesResponse> call = api.searchForPlace(input);
+        call.enqueue(new Callback<SearchesResponse>() {
+            @Override
+            public void onResponse(Call<SearchesResponse> call, Response<SearchesResponse> response) {
+                if(response.isSuccessful()){
+                    fetchedSeaches = response.body().getResults();
+                    setOnClickListner();
+                    adapter = new RecyclerAdapter(fetchedSeaches, listener);
+                    RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext());
+                    recyclerViewSearches.setLayoutManager(lm);
+                    recyclerViewSearches.setItemAnimator(new DefaultItemAnimator());
+                    recyclerViewSearches.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SearchesResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void setOnClickListner () {
+        listener = new RecyclerAdapter.RecyclerViewClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                showLocationCard(fetchedSeaches.get(position));
+            }
+        };
+    }
+
+    private void showLocationCard (Address address) {
+        try{
+            locationName = findViewById(R.id.locationName);
+            locationAddress = findViewById(R.id.locationAddress);
+            locationImage = findViewById(R.id.locationImage);
+
+            locationName.setText(address.getName());
+            locationAddress.setText(address.getFormatted_address());
+            Picasso.get().load(ldgoHelpers.googpeMapsImage(address.getFirstImage())).into(locationImage);
+
+            fetchedSeaches.clear();
+            adapter.notifyDataSetChanged();
+            locationSummaryCard.setVisibility(View.VISIBLE);
+        }catch (Exception e){
+            Log.d("my-error",e.getMessage());
+            Toast.makeText(MapsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
     }
 }

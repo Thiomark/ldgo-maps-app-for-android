@@ -98,7 +98,6 @@ public class ProfileActivity extends AppCompatActivity {
                         public void onResponse(Call<User> call, Response<User> response) {
                             if (!response.isSuccessful()) {
                                 Toast.makeText(ProfileActivity.this, response.message(), Toast.LENGTH_SHORT).show();
-                                Log.d("errrv", response.message());
                                 return;
                             }
                             setUser(response.body());
@@ -107,11 +106,9 @@ public class ProfileActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(Call<User> call, Throwable t) {
                             Toast.makeText(ProfileActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                            Log.d("errry", t.getMessage());
                         }
                     });
                 }catch (Exception e){
-                    Log.d("errri", e.getMessage());
                 }
 
             }
