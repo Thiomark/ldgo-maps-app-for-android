@@ -26,27 +26,25 @@
             android:layout_height="fill_parent"
             android:orientation="vertical"
             android:paddingHorizontal="10dp">
+
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sign In"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textColor="@color/grey"
+                android:textSize="28sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Username or Email"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="20dp"
                 android:textColor="@color/black"
-                android:textSize="18sp"
+                android:textSize="16dp"
                 android:textStyle="bold"
-                android:layout_marginBottom="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.13" />
+                android:layout_marginBottom="10dp" />
+
             <EditText
                 android:id="@+id/inputEmail"
                 android:layout_width="match_parent"
@@ -65,18 +63,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Password"
-                android:layout_marginTop="30dp"
+                android:text="Username or Email"
+                android:layout_marginTop="20dp"
                 android:textColor="@color/black"
-                android:textSize="18sp"
+                android:textSize="16dp"
                 android:textStyle="bold"
-                android:layout_marginBottom="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.13" />
-
+                android:layout_marginBottom="10dp" />
 
             <EditText
                 android:id="@+id/inputPassword"

@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-
 import com.example.ldgo.components.RecyclerAdapter;
 import com.example.ldgo.entities.Address;
 import com.example.ldgo.entities.FavouriteLocation;
@@ -98,8 +97,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RecyclerAdapter.RecyclerViewClickListener listener;
     ImageView locationImage;
     TextView locationAddress, locationName, closeDirectionsCard;
-    Button cancelBtn, saveLocationBtn, directionsBtn;
-    CardView locationSummaryCard, directionsSummaryCard;
+    ImageButton cancelBtn;
+    CardView locationSummaryCard, directionsSummaryCard, saveLocationBtn, directionsBtn;
     RecyclerAdapter adapter;
     private SharedPreferences sp;
     LdgoApi ldgoApi;
@@ -196,15 +195,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 try{
-                    locationSummaryCard.setVisibility(View.GONE);
-                    showCurrentPlace();
 
-//                String locations = likelyPlaceAddresses.toString();
-                    Log.d("losc", "ss" + likelyPlaceAddresses.length);
-                    Log.d("losc", "ss" + likelyPlaceAddresses[0]);
-//                Call<DistanceBetweenLocations> call = googleMapsApi.getDistanceBetweenLocations();
-
-                    directionsSummaryCard.setVisibility(View.VISIBLE);
+//                    locationSummaryCard.setVisibility(View.GONE);
+//                    showCurrentPlace();
+//
+////                String locations = likelyPlaceAddresses.toString();
+//                    Log.d("losc", "ss" + likelyPlaceAddresses.length);
+//                    Log.d("losc", "ss" + likelyPlaceAddresses[0]);
+////                Call<DistanceBetweenLocations> call = googleMapsApi.getDistanceBetweenLocations();
+//
+//                    directionsSummaryCard.setVisibility(View.VISIBLE);
                 }catch (Exception e) {
                     Log.d("losc-r", e.getMessage());
                 }

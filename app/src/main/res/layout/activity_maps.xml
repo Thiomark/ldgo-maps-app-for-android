@@ -37,6 +37,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_account_circle_24" />
+
+            <ImageButton
+                android:id="@+id/imageButton2"
+                android:layout_width="wrap_content"
+                android:background="@null"
+                android:layout_marginRight="15dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/goToProfile"
+                app:layout_constraintEnd_toStartOf="@+id/goToProfile"
+                app:layout_constraintTop_toTopOf="@+id/goToProfile"
+                app:srcCompat="@drawable/ic_baseline_bookmark_24" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <EditText
@@ -57,7 +69,6 @@
             android:id="@+id/recyclerViewSearches"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
                                 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
                             xmlns:tools="http://schemas.android.com/tools"
                             android:layout_width="match_parent"
@@ -91,21 +102,33 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:id="@+id/cancelBtn"
+                android:background="@null"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/locationName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/locationName"
+                app:srcCompat="@drawable/ic_baseline_close_24" />
+
             <TextView
                 android:id="@+id/locationAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="140 George St, The Rocks NSW 2000, Australia"
                 android:textSize="14sp"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="4dp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView4"
                 app:layout_constraintStart_toEndOf="@+id/imageView4"
                 app:layout_constraintTop_toTopOf="@+id/imageView4" />
 
             <ImageView
                 android:id="@+id/locationImage"
-                android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/directionsBtn"
                 tools:srcCompat="@tools:sample/avatars" />
@@ -113,42 +136,52 @@
             <ImageView
                 android:id="@+id/imageView4"
                 android:layout_width="wrap_content"
+                android:layout_marginTop="2dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/locationName"
                 app:srcCompat="@drawable/ic_baseline_location_on_24" />
 
-            <Button
+            <androidx.cardview.widget.CardView
                 android:id="@+id/directionsBtn"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Directions"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/locationAddress" />
+                app:cardCornerRadius="4dp"
+                android:layout_marginTop="6dp"
+                app:cardBackgroundColor="#000000"
+                app:layout_constraintTop_toBottomOf="@+id/locationAddress"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="20dp"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:text="Directions" />
+            </androidx.cardview.widget.CardView>
 
-            <Button
+            <androidx.cardview.widget.CardView
                 android:id="@+id/saveLocationBtn"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                app:cardCornerRadius="4dp"
+                app:cardBackgroundColor="#000000"
                 android:layout_marginStart="10dp"
-                android:text="Save"
                 app:layout_constraintBottom_toBottomOf="@+id/directionsBtn"
                 app:layout_constraintStart_toEndOf="@+id/directionsBtn"
-                app:layout_constraintTop_toTopOf="@+id/directionsBtn" />
-
-            <Button
-                android:id="@+id/cancelBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cancel"
-                android:layout_marginLeft="10dp"
-                app:layout_constraintBottom_toBottomOf="@+id/directionsBtn"
-                app:layout_constraintStart_toEndOf="@+id/saveLocationBtn"
-                app:layout_constraintTop_toTopOf="@+id/directionsBtn" />
+                app:layout_constraintTop_toTopOf="@+id/directionsBtn"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="20dp"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:text="Save" />
+            </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </androidx.cardview.widget.CardView>
-
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:id="@+id/directionsSummaryCard"
