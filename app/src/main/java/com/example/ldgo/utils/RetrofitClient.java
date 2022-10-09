@@ -29,7 +29,7 @@ public class RetrofitClient {
     }
 
     public static Retrofit getRetrofitInstance2(){
-        String BASE_URL = "https://maps.googleapis.com/maps/api/place/";
+        String BASE_URL = "https://maps.googleapis.com/maps/api/";
         return logic(BASE_URL);
     }
 

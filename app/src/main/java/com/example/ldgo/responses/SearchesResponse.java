@@ -1,6 +1,7 @@
 package com.example.ldgo.responses;
 
 import com.example.ldgo.entities.Address;
+import com.example.ldgo.entities.FavouriteLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,19 +15,17 @@ public class SearchesResponse {
         this.results = results;
     }
 
-    public ArrayList<String> getHtml_attributions() {
-        return html_attributions;
-    }
-
-    public void setHtml_attributions(ArrayList<String> html_attributions) {
-        this.html_attributions = html_attributions;
+    public FavouriteLocation getFirstFavouriteLocation(){
+        Address address = results.get(0);
+        return new FavouriteLocation(address.getName(),
+                address.getLongitudes(),
+                address.getLatitudes(),
+                address.getFormatted_address(),
+                address.getFirstImage(),
+                address.getPlace_id());
     }
 
     public ArrayList<Address> getResults() {
         return results;
-    }
-
-    public void setResults(ArrayList<Address> results) {
-        this.results = results;
     }
 }

@@ -1,18 +1,16 @@
 package com.example.ldgo.utils;
 
-import com.example.ldgo.entities.FavouriteLocation;
 import com.example.ldgo.entities.User;
 import com.example.ldgo.entities.UserLogin;
-import com.example.ldgo.responses.GetFavouriteResponses;
+import com.example.ldgo.requests.FavouriteLocationRequest;
+import com.example.ldgo.responses.FavouriteLocationResponse;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -34,7 +32,8 @@ public interface LdgoApi {
     Call<User> getUser(@Path("id") String id);
 
     @POST("favourites")
-    Call<GetFavouriteResponses> addFavouritesLocations(@Body FavouriteLocation favouriteLocation);
+    Call<FavouriteLocationResponse> addFavouritesLocations(@Header("Authorization") String token,
+                                                           @Body FavouriteLocationRequest favourite);
 
     @PUT("users/{id}")
     Call<User> updateUser(@Path("id") String id, @Body User user);

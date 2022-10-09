@@ -17,6 +17,18 @@ public class Address {
         this.geometry = geometry;
     }
 
+    public FavouriteLocation getFavouriteLocation(){
+        return new FavouriteLocation(name, getLongitudes(), getLongitudes(), formatted_address, getFirstImage(), place_id);
+    }
+
+    public String getLatitudes() {
+        return this.geometry.location.lat;
+    }
+
+    public String getLongitudes() {
+        return this.geometry.location.lng;
+    }
+
     public String getFirstImage(){
         return photos.get(0).photo_reference;
     }
@@ -63,7 +75,7 @@ public class Address {
 }
 
 class Geometry {
-    Location location;
+    public Location location;
 
     public Geometry(Location location) {
         this.location = location;

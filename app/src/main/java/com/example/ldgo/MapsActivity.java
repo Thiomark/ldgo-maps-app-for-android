@@ -7,7 +7,10 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -17,8 +20,10 @@ import android.widget.ImageButton;
 
 import com.example.ldgo.components.RecyclerAdapter;
 import com.example.ldgo.entities.Address;
-import com.example.ldgo.entities.User;
-import com.example.ldgo.responses.GetFavouriteResponses;
+import com.example.ldgo.entities.FavouriteLocation;
+import com.example.ldgo.requests.FavouriteLocationRequest;
+import com.example.ldgo.responses.DistanceBetweenLocations;
+import com.example.ldgo.responses.FavouriteLocationResponse;
 import com.example.ldgo.responses.SearchesResponse;
 import com.example.ldgo.utils.LdgoApi;
 import com.example.ldgo.utils.LdgoGoogleMapsApi;
@@ -85,15 +90,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleMap mMap;
     private ArrayList<Address> fetchedSeaches = new ArrayList<>();
+    private FavouriteLocation selectedLocation;
+
     EditText searchInputField;
     ImageButton goToProfile;
     RecyclerView recyclerViewSearches;
     private RecyclerAdapter.RecyclerViewClickListener listener;
     ImageView locationImage;
-    TextView locationAddress, locationName;
-    Button cancelBtn, saveLocationBtn;
-    CardView locationSummaryCard;
+    TextView locationAddress, locationName, closeDirectionsCard;
+    Button cancelBtn, saveLocationBtn, directionsBtn;
+    CardView locationSummaryCard, directionsSummaryCard;
     RecyclerAdapter adapter;
+    private SharedPreferences sp;
+    LdgoApi ldgoApi;
+    LdgoGoogleMapsApi googleMapsApi;
+
 
     // Everything thing below is from the documention
 
@@ -130,8 +141,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List[] likelyPlaceAttributions;
     private LatLng[] likelyPlaceLatLngs;
 
-    LdgoApi ldgoApi;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,7 +172,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         searchInputField = findViewById(R.id.searchInputField);
         recyclerViewSearches = findViewById(R.id.recyclerViewSearches);
         saveLocationBtn = findViewById(R.id.saveLocationBtn);
+        directionsSummaryCard = findViewById(R.id.directionsSummaryCard);
+        directionsBtn = findViewById(R.id.directionsBtn);
+        closeDirectionsCard = findViewById(R.id.closeDirectionsCard);
+
         ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
+        googleMapsApi = RetrofitClient.getRetrofitInstance2().create(LdgoGoogleMapsApi.class);
+        sp = getSharedPreferences("user", Context.MODE_PRIVATE);
 
         searchInputField.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -177,11 +192,56 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        directionsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    locationSummaryCard.setVisibility(View.GONE);
+                    showCurrentPlace();
+
+//                String locations = likelyPlaceAddresses.toString();
+                    Log.d("losc", "ss" + likelyPlaceAddresses.length);
+                    Log.d("losc", "ss" + likelyPlaceAddresses[0]);
+//                Call<DistanceBetweenLocations> call = googleMapsApi.getDistanceBetweenLocations();
+
+                    directionsSummaryCard.setVisibility(View.VISIBLE);
+                }catch (Exception e) {
+                    Log.d("losc-r", e.getMessage());
+                }
+
+            }
+        });
+
+        closeDirectionsCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                directionsSummaryCard.setVisibility(View.GONE);
+            }
+        });
+
         saveLocationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MapsActivity.this, "Location Saved", Toast.LENGTH_SHORT).show();
-//                Call<GetFavouriteResponses> call = ldgoApi.addFavouritesLocations();
+
+                sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+                String jwt = sp.getString( "jwt", "");
+                FavouriteLocationRequest favourite = new FavouriteLocationRequest(selectedLocation);
+                Call<FavouriteLocationResponse> call = ldgoApi.addFavouritesLocations(jwt, favourite);
+                call.enqueue(new Callback<FavouriteLocationResponse>() {
+                    @Override
+                    public void onResponse(Call<FavouriteLocationResponse> call, Response<FavouriteLocationResponse> response) {
+                        if(!response.isSuccessful()){
+                            Toast.makeText(MapsActivity.this, "Location not saved, something went wrong", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        Toast.makeText(MapsActivity.this, "Location Saved", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<FavouriteLocationResponse> call, Throwable t) {
+
+                    }
+                });
             }
         });
 
@@ -292,6 +352,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
          */
         try {
             if (locationPermissionGranted) {
+                @SuppressLint("MissingPermission")
                 Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
                     @Override
@@ -499,19 +560,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onPoiClick(@NonNull PointOfInterest pointOfInterest) {
-        locationSummaryCard.setVisibility(View.GONE);
-        fetchedSeaches.clear();
-        Toast.makeText(this, "Clicked: " +
-                        pointOfInterest.name + "\nPlace ID:" + pointOfInterest +
-                        "\nLatitude:" + pointOfInterest.latLng.latitude +
-                        " Longitude:" + pointOfInterest.latLng.longitude,
-                Toast.LENGTH_SHORT).show();
+        Call<SearchesResponse> call = googleMapsApi.searchForPlace(pointOfInterest.name);
+        call.enqueue(new Callback<SearchesResponse>() {
+            @Override
+            public void onResponse(Call<SearchesResponse> call, Response<SearchesResponse> response) {
+                if(response.isSuccessful()){
+                    showLocationCard(response.body().getFirstFavouriteLocation());
+                    return;
+                }
+            }
 
+            @Override
+            public void onFailure(Call<SearchesResponse> call, Throwable t) {
+
+            }
+        });
     }
 
     private void searchForPlaceOnTheMap(String input) {
-        LdgoGoogleMapsApi api = RetrofitClient.getRetrofitInstance2().create(LdgoGoogleMapsApi.class);
-        Call<SearchesResponse> call = api.searchForPlace(input);
+        Call<SearchesResponse> call = googleMapsApi.searchForPlace(input);
         call.enqueue(new Callback<SearchesResponse>() {
             @Override
             public void onResponse(Call<SearchesResponse> call, Response<SearchesResponse> response) {
@@ -537,22 +604,53 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         listener = new RecyclerAdapter.RecyclerViewClickListener() {
             @Override
             public void onClick(View view, int position) {
-                showLocationCard(fetchedSeaches.get(position));
+                try{
+                    showLocationCard(fetchedSeaches.get(position));
+                }catch (Exception e){
+                    Log.d("eera", e.getMessage());
+                }
             }
         };
     }
 
     private void showLocationCard (Address address) {
-        locationName = findViewById(R.id.locationName);
-        locationAddress = findViewById(R.id.locationAddress);
-        locationImage = findViewById(R.id.locationImage);
+        try{
+            locationName = findViewById(R.id.locationName);
+            locationAddress = findViewById(R.id.locationAddress);
+            locationImage = findViewById(R.id.locationImage);
 
-        locationName.setText(address.getName());
-        locationAddress.setText(address.getFormatted_address());
-        Picasso.get().load(ldgoHelpers.googpeMapsImage(address.getFirstImage())).into(locationImage);
+            String name = address.getName();
+            String latitudes = address.getLatitudes();
+            String longitudes = address.getLongitudes();
+            String formatted_address = address.getFormatted_address();
+            String image = address.getFirstImage();
+            String place_id = address.getPlace_id();
 
-        fetchedSeaches.clear();
-        adapter.notifyDataSetChanged();
-        locationSummaryCard.setVisibility(View.VISIBLE);
+            selectedLocation = new FavouriteLocation(name, longitudes, latitudes, formatted_address, image, place_id);
+            locationName.setText(name);
+            locationAddress.setText(formatted_address);
+            Picasso.get().load(ldgoHelpers.googpeMapsImage(image)).into(locationImage);
+            fetchedSeaches.clear();
+            adapter.notifyDataSetChanged();
+            locationSummaryCard.setVisibility(View.VISIBLE);
+        }catch (Exception e){
+            Log.d("errv", e.getMessage());
+        }
+    }
+
+    private void showLocationCard (FavouriteLocation favouriteLocation) {
+        try{
+            locationName = findViewById(R.id.locationName);
+            locationAddress = findViewById(R.id.locationAddress);
+            locationImage = findViewById(R.id.locationImage);
+
+            locationName.setText(favouriteLocation.getName());
+            locationAddress.setText(favouriteLocation.getFormatted_address());
+            Picasso.get().load(ldgoHelpers.googpeMapsImage(favouriteLocation.getPhoto_reference())).into(locationImage);
+            selectedLocation = favouriteLocation;
+            locationSummaryCard.setVisibility(View.VISIBLE);
+        }catch (Exception e) {
+            Log.d("errr", e.getMessage());
+        }
     }
 }
