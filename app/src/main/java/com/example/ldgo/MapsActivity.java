@@ -499,19 +499,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onPoiClick(@NonNull PointOfInterest pointOfInterest) {
-        try{
-//            locationSummaryCard.setVisibility(View.GONE);
-//            fetchedSeaches.clear();
-//            adapter.notifyDataSetChanged();
-            Toast.makeText(this, "Clicked: " +
-                            pointOfInterest.name + "\nPlace ID:" + pointOfInterest +
-                            "\nLatitude:" + pointOfInterest.latLng.latitude +
-                            " Longitude:" + pointOfInterest.latLng.longitude,
-                    Toast.LENGTH_SHORT).show();
-        }catch (Exception e){
-            Log.d("my-error",e.getMessage());
-            Toast.makeText(MapsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
+        locationSummaryCard.setVisibility(View.GONE);
+        fetchedSeaches.clear();
+        Toast.makeText(this, "Clicked: " +
+                        pointOfInterest.name + "\nPlace ID:" + pointOfInterest +
+                        "\nLatitude:" + pointOfInterest.latLng.latitude +
+                        " Longitude:" + pointOfInterest.latLng.longitude,
+                Toast.LENGTH_SHORT).show();
 
     }
 
@@ -549,22 +543,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void showLocationCard (Address address) {
-        try{
-            locationName = findViewById(R.id.locationName);
-            locationAddress = findViewById(R.id.locationAddress);
-            locationImage = findViewById(R.id.locationImage);
+        locationName = findViewById(R.id.locationName);
+        locationAddress = findViewById(R.id.locationAddress);
+        locationImage = findViewById(R.id.locationImage);
 
-            locationName.setText(address.getName());
-            locationAddress.setText(address.getFormatted_address());
-            Picasso.get().load(ldgoHelpers.googpeMapsImage(address.getFirstImage())).into(locationImage);
+        locationName.setText(address.getName());
+        locationAddress.setText(address.getFormatted_address());
+        Picasso.get().load(ldgoHelpers.googpeMapsImage(address.getFirstImage())).into(locationImage);
 
-            fetchedSeaches.clear();
-            adapter.notifyDataSetChanged();
-            locationSummaryCard.setVisibility(View.VISIBLE);
-        }catch (Exception e){
-            Log.d("my-error",e.getMessage());
-            Toast.makeText(MapsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-
+        fetchedSeaches.clear();
+        adapter.notifyDataSetChanged();
+        locationSummaryCard.setVisibility(View.VISIBLE);
     }
 }
