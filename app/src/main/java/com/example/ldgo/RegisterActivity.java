@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ldgo.components.LoadingDialogBar;
 import com.example.ldgo.entities.User;
 import com.example.ldgo.entities.UserLogin;
 import com.example.ldgo.utils.LdgoApi;
@@ -29,6 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister;
     private EditText inputEmail, inputPassword, inputUsername, inputName;
     private SharedPreferences sp;
+    LoadingDialogBar loadingDialogBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
         inputUsername = findViewById(R.id.inputUsername);
         inputName = findViewById(R.id.inputName);
         btnRegister = findViewById(R.id.btnRegister);
+        loadingDialogBar = new LoadingDialogBar(this);
 
         sp = getSharedPreferences("user", Context.MODE_PRIVATE);
 
@@ -75,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity {
             String username = inputUsername.getText().toString();
             String password = inputPassword.getText().toString();
             Call<UserLogin> call = ldgoApi.register(name, email, username, password);
-
+            loadingDialogBar.ShowDialog("loading...");
             call.enqueue(new Callback<UserLogin>() {
                 @Override
                 public void onResponse(Call<UserLogin> call, Response<UserLogin> response) {
@@ -85,6 +88,7 @@ public class RegisterActivity extends AppCompatActivity {
                         return;
                     }
 
+                    loadingDialogBar.HideDialog();
                     saveData(response.body().getUser().getUsername(), response.body().getUser().getId(), response.body().getJwt());
                 }
 

@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ldgo.components.LoadingDialogBar;
 import com.example.ldgo.entities.User;
 import com.example.ldgo.entities.UserLogin;
 import com.example.ldgo.utils.LdgoApi;
@@ -34,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin;
     private TextView btnSignUp;
     private SharedPreferences sp;
+    LoadingDialogBar loadingDialogBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,8 @@ public class LoginActivity extends AppCompatActivity {
         inputPassword = findViewById(R.id.inputPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
+
+        loadingDialogBar = new LoadingDialogBar(this);
 
         sp = getSharedPreferences("user", Context.MODE_PRIVATE);
 
@@ -71,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
             Call<UserLogin> call = ldgoApi.login(inputEmail.getText().toString(), inputPassword.getText().toString());
+            loadingDialogBar.ShowDialog("loading...");
             call.enqueue(new Callback<UserLogin>() {
                 @Override
                 public void onResponse(Call<UserLogin> call, Response<UserLogin> response) {
@@ -79,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                         return;
                     }
-
+                    loadingDialogBar.HideDialog();
                     saveData(response.body().getUser().getUsername(), response.body().getUser().getId(), response.body().getJwt());
                 }
 

@@ -2,6 +2,7 @@ package com.example.ldgo.utils;
 
 import com.example.ldgo.entities.User;
 import com.example.ldgo.entities.UserLogin;
+import com.example.ldgo.requests.AllFavouriteLocationRequest;
 import com.example.ldgo.requests.FavouriteLocationRequest;
 import com.example.ldgo.responses.FavouriteLocationResponse;
 
@@ -34,6 +35,9 @@ public interface LdgoApi {
     @POST("favourites")
     Call<FavouriteLocationResponse> addFavouritesLocations(@Header("Authorization") String token,
                                                            @Body FavouriteLocationRequest favourite);
+
+    @GET("favourites")
+    Call<AllFavouriteLocationRequest> getFavouritesLocations(@Header("Authorization") String token);
 
     @PUT("users/{id}")
     Call<User> updateUser(@Path("id") String id, @Body User user);

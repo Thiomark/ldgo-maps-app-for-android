@@ -97,7 +97,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RecyclerAdapter.RecyclerViewClickListener listener;
     ImageView locationImage;
     TextView locationAddress, locationName, closeDirectionsCard;
-    ImageButton cancelBtn;
+    ImageButton cancelBtn, goToFavourites;
     CardView locationSummaryCard, directionsSummaryCard, saveLocationBtn, directionsBtn;
     RecyclerAdapter adapter;
     private SharedPreferences sp;
@@ -174,6 +174,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         directionsSummaryCard = findViewById(R.id.directionsSummaryCard);
         directionsBtn = findViewById(R.id.directionsBtn);
         closeDirectionsCard = findViewById(R.id.closeDirectionsCard);
+        goToFavourites = findViewById(R.id.goToFavourites);
 
         ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
         googleMapsApi = RetrofitClient.getRetrofitInstance2().create(LdgoGoogleMapsApi.class);
@@ -188,6 +189,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     return true;
                 }
                 return false;
+            }
+        });
+
+        goToFavourites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MapsActivity.this, FavouriteActivity.class);
+                startActivity(intent);
             }
         });
 

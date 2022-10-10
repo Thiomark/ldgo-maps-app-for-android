@@ -42,7 +42,6 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         loadingDialogBar = new LoadingDialogBar(this);
-
         loadingDialogBar.ShowDialog("loading...");
 
         infoSection = findViewById(R.id.infoSection);
