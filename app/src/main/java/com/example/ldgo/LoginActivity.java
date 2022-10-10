@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onResponse(Call<UserLogin> call, Response<UserLogin> response) {
                     if (!response.isSuccessful()) {
                         Log.d("log-error", response.message());
-                        Toast.makeText(LoginActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "the username or the password is incorrect", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     loadingDialogBar.HideDialog();
@@ -91,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<UserLogin> call, Throwable t) {
                     Log.d("log-fail", t.getMessage());
-                    Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT);
+                    Toast.makeText(LoginActivity.this, "the username or the password is incorrect", Toast.LENGTH_SHORT);
                 }
             });
         }

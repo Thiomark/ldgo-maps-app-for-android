@@ -103,7 +103,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private SharedPreferences sp;
     LdgoApi ldgoApi;
     LdgoGoogleMapsApi googleMapsApi;
-
+    double myLatitudes = -26.1952602;
+    double myLongitude = 28.0337497;
+    double finalLongitudes = 28.0567007;
+    double finalLatitudes = -26.1075663;
 
     // Everything thing below is from the documention
 
@@ -120,7 +123,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // A default location (Sydney, Australia) and default zoom to use when location permission is
     // not granted.
-    private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private final LatLng defaultLocation = new LatLng(myLatitudes, myLongitude);
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean locationPermissionGranted;
@@ -205,21 +208,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 try{
                     Intent in = new Intent(MapsActivity.this, DirectionsActivity.class);
+                    in.putExtra("myLongitude", myLongitude);
+                    in.putExtra("myLatitudes", myLatitudes);
+                    in.putExtra("finalLongitudes", finalLongitudes);
+                    in.putExtra("finalLatitudes", finalLatitudes);
                     startActivity(in);
 
-//                    locationSummaryCard.setVisibility(View.GONE);
-//                    showCurrentPlace();
-//
-////                String locations = likelyPlaceAddresses.toString();
-//                    Log.d("losc", "ss" + likelyPlaceAddresses.length);
-//                    Log.d("losc", "ss" + likelyPlaceAddresses[0]);
-////                Call<DistanceBetweenLocations> call = googleMapsApi.getDistanceBetweenLocations();
-//
-//                    directionsSummaryCard.setVisibility(View.VISIBLE);
                 }catch (Exception e) {
                     Log.d("losc-r", e.getMessage());
                 }
-
             }
         });
 
@@ -372,9 +369,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             // Set the map's camera position to the current location of the device.
                             lastKnownLocation = task.getResult();
                             if (lastKnownLocation != null) {
-                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                        new LatLng(lastKnownLocation.getLatitude(),
-                                                lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+
+                                myLatitudes = lastKnownLocation.getLatitude();
+                                myLongitude = lastKnownLocation.getLongitude();
+
+                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                             }
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
@@ -654,6 +653,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             locationName = findViewById(R.id.locationName);
             locationAddress = findViewById(R.id.locationAddress);
             locationImage = findViewById(R.id.locationImage);
+
+            try{
+                myLongitude = Double.parseDouble(favouriteLocation.getLongitudes());
+                myLatitudes = Double.parseDouble(favouriteLocation.getLatitudes());
+            }catch (Exception e){
+
+            }
 
             locationName.setText(favouriteLocation.getName());
             locationAddress.setText(favouriteLocation.getFormatted_address());

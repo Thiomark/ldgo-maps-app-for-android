@@ -1,42 +1,33 @@
 package com.example.ldgo.responses;
 
+import com.example.ldgo.entities.Address;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
 public class DistanceBetweenLocations {
-    ArrayList<String> destination_addresses;
-    ArrayList<String> origin_addresses;
-    ArrayList<Elements> rows;
+    ArrayList<String> html_attributions;
+    ArrayList<Address> results;
 
-    public DistanceBetweenLocations(ArrayList<String> destination_addresses, ArrayList<String> origin_addresses, ArrayList<Elements> rows) {
-        this.destination_addresses = destination_addresses;
-        this.origin_addresses = origin_addresses;
-        this.rows = rows;
+    public DistanceBetweenLocations(ArrayList<String> html_attributions, ArrayList<Address> results) {
+        this.html_attributions = html_attributions;
+        this.results = results;
     }
 
-    public ArrayList<String> getDestination_addresses() {
-        return destination_addresses;
+    public ArrayList<String> getHtml_attributions() {
+        return html_attributions;
     }
 
-    public void setDestination_addresses(ArrayList<String> destination_addresses) {
-        this.destination_addresses = destination_addresses;
+    public void setHtml_attributions(ArrayList<String> html_attributions) {
+        this.html_attributions = html_attributions;
     }
 
-    public ArrayList<String> getOrigin_addresses() {
-        return origin_addresses;
+    public ArrayList<Address> getResults() {
+        return results;
     }
 
-    public void setOrigin_addresses(ArrayList<String> origin_addresses) {
-        this.origin_addresses = origin_addresses;
-    }
-
-    public ArrayList<Elements> getRows() {
-        return rows;
-    }
-
-    public void setRows(ArrayList<Elements> rows) {
-        this.rows = rows;
+    public void setResults(ArrayList<Address> results) {
+        this.results = results;
     }
 
     class Elements {

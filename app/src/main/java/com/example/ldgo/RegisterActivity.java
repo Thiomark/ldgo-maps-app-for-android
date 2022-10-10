@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
                 public void onResponse(Call<UserLogin> call, Response<UserLogin> response) {
                     if (!response.isSuccessful()) {
                         Log.d("log-error", response.message());
-                        Toast.makeText(RegisterActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, "invalid credentials", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -95,7 +95,7 @@ public class RegisterActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<UserLogin> call, Throwable t) {
                     Log.d("log-fail", t.getMessage());
-                    Toast.makeText(RegisterActivity.this, t.getMessage(), Toast.LENGTH_SHORT);
+                    Toast.makeText(RegisterActivity.this, "invalid credentials", Toast.LENGTH_SHORT);
                 }
             });
 

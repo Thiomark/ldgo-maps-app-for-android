@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -49,12 +48,12 @@
                 android:padding="20dp">
 
                 <EditText
-                    android:id="@+id/editTextTextPersonName"
+                    android:id="@+id/destination"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/text_input"
                     android:ems="10"
-                    android:hint="Enter the destination location"
+                    android:hint="Enter the destination locationn"
                     android:inputType="textPersonName"
                     android:paddingHorizontal="20dp"
                     android:paddingVertical="14dp"
@@ -73,7 +72,7 @@
                     android:textColor="@color/black"
                     android:textSize="16dp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName"
+                    app:layout_constraintBottom_toTopOf="@+id/destination"
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
@@ -90,7 +89,7 @@
                     app:layout_constraintTop_toTopOf="@+id/textView4" />
 
                 <EditText
-                    android:id="@+id/editTextTextPersonName2"
+                    android:id="@+id/origin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="40dp"
@@ -116,6 +115,26 @@
                     app:layout_constraintStart_toEndOf="@+id/textView4"
                     app:layout_constraintTop_toTopOf="@+id/textView4"
                     app:srcCompat="@drawable/ic_baseline_access_time_24" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/startButton"
+                    android:layout_width="wrap_content"
+                    app:cardBackgroundColor="@color/btn_gray"
+                    app:cardCornerRadius="4sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView4"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textSize="12dp"
+                        android:paddingHorizontal="30dp"
+                        android:paddingVertical="8dp"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:text="START" />
+                </androidx.cardview.widget.CardView>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
