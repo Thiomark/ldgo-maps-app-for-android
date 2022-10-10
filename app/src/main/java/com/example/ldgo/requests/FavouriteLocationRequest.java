@@ -10,4 +10,12 @@ public class FavouriteLocationRequest {
     public FavouriteLocationRequest(FavouriteLocation data) {
         this.data = data;
     }
+
+    public FavouriteLocation getData() {
+        return data;
+    }
+
+    public void setData(FavouriteLocation data) {
+        this.data = data;
+    }
 }

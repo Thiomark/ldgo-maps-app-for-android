@@ -12,11 +12,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.ldgo.components.FavouriteRecyclerAdapter;
+import com.example.ldgo.components.LoadingDialogBar;
 import com.example.ldgo.entities.FavouriteLocation;
 import com.example.ldgo.entities.User;
 import com.example.ldgo.requests.AllFavouriteLocationRequest;
+import com.example.ldgo.responses.FavouriteLocationResponse;
 import com.example.ldgo.responses.SearchesResponse;
 import com.example.ldgo.utils.LdgoApi;
 import com.example.ldgo.utils.RetrofitClient;
@@ -29,41 +33,53 @@ import retrofit2.Response;
 
 public class FavouriteActivity extends AppCompatActivity {
 
-    Button btnGoToHome;
+    ImageButton btnGoToHome;
     ArrayList<FavouriteLocation> savedLocations;
     private SharedPreferences sp;
+    private LdgoApi ldgoApi;
+    private TextView textViewResult;
     private RecyclerView recyclerView;
-    LdgoApi ldgoApi;
+    private String resItems;
+    LoadingDialogBar loadingDialogBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourite);
+        loadingDialogBar = new LoadingDialogBar(this);
+        loadingDialogBar.ShowDialog("loading...");
+
+        textViewResult = findViewById(R.id.text_view_result);
+        btnGoToHome = findViewById(R.id.goToMapsBtn);
+
+        sp = getSharedPreferences("user", Context.MODE_PRIVATE);
+        String jwt = sp.getString( "jwt", "");
+
+        btnGoToHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(FavouriteActivity.this, MapsActivity.class);
+                startActivity(intent);
+            }
+        });
 
         try {
-            recyclerView = findViewById(R.id.savedLocationRV);
-            sp = getSharedPreferences("user", Context.MODE_PRIVATE);
             ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
-            String jwt = sp.getString( "jwt", "");
             Call<AllFavouriteLocationRequest> call = ldgoApi.getFavouritesLocations(jwt);
-            Log.d("xx", jwt);
             call.enqueue(new Callback<AllFavouriteLocationRequest>() {
                 @Override
                 public void onResponse(Call<AllFavouriteLocationRequest> call, Response<AllFavouriteLocationRequest> response) {
                     if(response.isSuccessful()){
-                        savedLocations = response.body().getData();
-                        try{
-                            for(FavouriteLocation fl : savedLocations){
-                                Log.d("ddfd", fl.getName());
-                                Log.d("ddfd", fl.getFormatted_address());
-                                Log.d("ddfd", fl.getPhoto_reference());
-                                Log.d("ddfd", "xxxxxxxxxxxxxxxxxx cvbcvb xxxxxxxxxxx");
-                            }
-                        }catch (Exception e){
-                            Log.d("ddfd", e.getMessage());
+                        ArrayList<FavouriteLocationResponse> res = response.body().getData();
+                        for(FavouriteLocationResponse r : res){
+                            String content = "";
+                            content += "Name: " + r.getAttributes().getFormatted_address() + "\n";
+                            content += "" + r.getAttributes().getName() + "\n\n";
+                            textViewResult.append(content);
                         }
-
                     }
+
+                    loadingDialogBar.HideDialog();
                 }
 
                 @Override
@@ -71,32 +87,6 @@ public class FavouriteActivity extends AppCompatActivity {
 
                 }
             });
-        }catch (Exception e) {
-            Log.d("sss", e.getMessage());
-        }
-
-        setAdapter();
-
-//        btnGoToHome.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(FavouriteActivity.this, HomeActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-    }
-    public void setAdapter() {
-        try{
-//            Logger.dd("section label", savedLocations);
-            Log.d("ddd", " "+ savedLocations.get(0).getFormatted_address());
-//            FavouriteRecyclerAdapter adapter = new FavouriteRecyclerAdapter(savedLocations);
-//            RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext());
-//            recyclerView.setLayoutManager(lm);
-//            recyclerView.setItemAnimator(new DefaultItemAnimator());
-//            recyclerView.setAdapter(adapter);
-        } catch (Exception e) {
-            Log.d("sss", e.getMessage());
-        }
-
+        }catch (Exception e) { }
     }
 }

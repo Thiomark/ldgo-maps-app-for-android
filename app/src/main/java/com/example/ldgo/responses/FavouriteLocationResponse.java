@@ -11,4 +11,20 @@ public class FavouriteLocationResponse {
         this.id = id;
         this.attributes = attributes;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public FavouriteLocation getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(FavouriteLocation attributes) {
+        this.attributes = attributes;
+    }
 }

@@ -204,6 +204,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 try{
+                    Intent in = new Intent(MapsActivity.this, DirectionsActivity.class);
+                    startActivity(in);
 
 //                    locationSummaryCard.setVisibility(View.GONE);
 //                    showCurrentPlace();

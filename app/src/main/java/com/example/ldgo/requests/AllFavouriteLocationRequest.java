@@ -1,25 +1,34 @@
 package com.example.ldgo.requests;
 
 import com.example.ldgo.entities.FavouriteLocation;
+import com.example.ldgo.responses.FavouriteLocationResponse;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
 public class AllFavouriteLocationRequest {
 
-    ArrayList<FavouriteLocation> data;
-    @SerializedName("data")
-    FavouriteLocation data2;
+    ArrayList<FavouriteLocationResponse> data;
 
-    public AllFavouriteLocationRequest(ArrayList<FavouriteLocation> data) {
+    public AllFavouriteLocationRequest(ArrayList<FavouriteLocationResponse> data) {
         this.data = data;
     }
 
-    public ArrayList<FavouriteLocation> getData() {
+    public ArrayList<FavouriteLocationResponse> getData() {
         return data;
     }
 
-    public void setData(ArrayList<FavouriteLocation> data) {
+    public ArrayList<FavouriteLocation> getFavouriteLocations() {
+        ArrayList<FavouriteLocation> res = null;
+        if(data.size() > 0){
+            for(FavouriteLocationResponse attr : data) {
+                res.add(attr.getAttributes());
+            }
+        }
+        return res;
+    }
+
+    public void setData(ArrayList<FavouriteLocationResponse> data) {
         this.data = data;
     }
 }
