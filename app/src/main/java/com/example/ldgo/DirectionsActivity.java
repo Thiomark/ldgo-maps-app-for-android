@@ -174,24 +174,13 @@ public class DirectionsActivity extends FragmentActivity implements OnMapReadyCa
     }
 
     public void searchForLocation() {
-        String myLocation;
-        String finalDestinationnn;
 
-        myLocation = originInput.getText().toString();
-        finalDestinationnn = destinationInput.getText().toString();
+        String myLocation = originInput.getText().toString();
+        String finalDestination = destinationInput.getText().toString();
 
-        if(myLocation == null) {
-            myLocation = "Braamfontein, Johannesburg, 2017, South Africa";
-        }
-
-        if(finalDestinationnn == null) {
-            Bundle bundle = getIntent().getExtras();
-            finalDestinationnn = bundle.getString("finalDestination");
-        }
         try{
             String unit = user.getUseMetric() ? "metric" : "imperial";
-            Call<DistanceBetweenLocations> call = googleMapsApi.getDistanceBetweenLocations(unit , finalDestinationnn, myLocation);
-            String finalDestinationnn1 = finalDestinationnn;
+            Call<DistanceBetweenLocations> call = googleMapsApi.getDistanceBetweenLocations(unit , finalDestination, myLocation);
             call.enqueue(new Callback<DistanceBetweenLocations>() {
                 @Override
                 public void onResponse(Call<DistanceBetweenLocations> call, Response<DistanceBetweenLocations> response) {
@@ -201,7 +190,8 @@ public class DirectionsActivity extends FragmentActivity implements OnMapReadyCa
                             timeItTakes.setText(response.body().getRows().get(0).getElements().get(0).getDuration().getText());
                             originInput.setText(response.body().getOrigin_addresses().get(0));
                             destinationInput.setText(response.body().getDestination_addresses().get(0));
-                            getLocations(finalDestinationnn1, -33.9248685, 18.4240553);
+                            getLocations();
+//                            getLocations(finalDestination, -33.9248685, 18.4240553);
 //                            searchForPlaceOnTheMap(response.body().getOrigin_addresses().get(0));
                         }catch (Exception e){
                             Toast.makeText(DirectionsActivity.this, "Not found", Toast.LENGTH_SHORT).show();
@@ -222,11 +212,7 @@ public class DirectionsActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        Double finalLongitudes = Double.parseDouble(FINAL_LONGITUDE);
-        Double finalLatitudes = Double.parseDouble(FINAL_LATITUDE);
-        String finalDestination = FINAL_DESTINATION;
-        getLocations(finalDestination, finalLatitudes, finalLongitudes);
+        getLocations();
     }
 
     @Override
@@ -234,10 +220,14 @@ public class DirectionsActivity extends FragmentActivity implements OnMapReadyCa
         super.onPointerCaptureChanged(hasCapture);
     }
 
-    public void getLocations(String finalDestination, Double finalLatitudes, Double finalLongitudes){
+    public void getLocations(){
         double myLatitudes = Double.parseDouble(INITIAL_LATITUDE);
         double myLongitude = Double.parseDouble(INITIAL_LONGITUDE);
         String myLocation = INITIAL_DESTINATION;
+
+        Double finalLongitudes = Double.parseDouble(FINAL_LATITUDE);
+        Double finalLatitudes = Double.parseDouble(FINAL_LONGITUDE);
+        String finalDestination = FINAL_DESTINATION;
 
         try {
             showLocationOnMaps(myLocation, myLongitude, myLatitudes, finalDestination, finalLatitudes, finalLongitudes);
@@ -252,9 +242,6 @@ public class DirectionsActivity extends FragmentActivity implements OnMapReadyCa
 
             LatLng madrid = new LatLng(finalLatitudes, finalLongitudes);
             mMap.addMarker(new MarkerOptions().position(madrid).title(finalDestination));
-
-            LatLng zaragoza = new LatLng(-29.085214, 26.1595761);
-
 
             //Define list to get all latlng for the route
             List<LatLng> path = new ArrayList<>();
@@ -317,7 +304,7 @@ public class DirectionsActivity extends FragmentActivity implements OnMapReadyCa
 
             mMap.getUiSettings().setZoomControlsEnabled(true);
 
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(zaragoza, 8));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(barcelona, 8));
         }catch(Exception e) {}
     }
 
