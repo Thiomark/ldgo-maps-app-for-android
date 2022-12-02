@@ -72,33 +72,37 @@ public class RegisterActivity extends AppCompatActivity {
         ){
             Toast.makeText(this, "Please enter all fields!!", Toast.LENGTH_LONG).show();
         }else{
-            LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
-            String name = inputName.getText().toString();
-            String email = inputEmail.getText().toString();
-            String username = inputUsername.getText().toString();
-            String password = inputPassword.getText().toString();
-            Call<UserLogin> call = ldgoApi.register(name, email, username, password);
-            loadingDialogBar.ShowDialog("loading...");
-            call.enqueue(new Callback<UserLogin>() {
-                @Override
-                public void onResponse(Call<UserLogin> call, Response<UserLogin> response) {
-                    if (!response.isSuccessful()) {
-                        Log.d("log-error", response.message());
-                        Toast.makeText(RegisterActivity.this, "invalid credentials", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+            if(inputPassword.getText().toString().length() < 6) {
+                Toast.makeText(this, "Password too short!!", Toast.LENGTH_LONG).show();
+            } else {
+                if (android.util.Patterns.EMAIL_ADDRESS.matcher(inputEmail.getText().toString()).matches()) {
+                    LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
+                    String name = inputName.getText().toString();
+                    String email = inputEmail.getText().toString();
+                    String username = inputUsername.getText().toString();
+                    String password = inputPassword.getText().toString();
+                    Call<UserLogin> call = ldgoApi.register(name, email, username, password);
+                    loadingDialogBar.ShowDialog("loading...");
+                    call.enqueue(new Callback<UserLogin>() {
+                        @Override
+                        public void onResponse(Call<UserLogin> call, Response<UserLogin> response) {
+                            if (!response.isSuccessful()) {
+                                loadingDialogBar.HideDialog();
+                                Toast.makeText(RegisterActivity.this, "Email or Username are already taken", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            saveData(response.body().getUser().getUsername(), response.body().getUser().getId(), response.body().getJwt());
+                        }
 
-                    loadingDialogBar.HideDialog();
-                    saveData(response.body().getUser().getUsername(), response.body().getUser().getId(), response.body().getJwt());
+                        @Override
+                        public void onFailure(Call<UserLogin> call, Throwable t) {
+                            Toast.makeText(RegisterActivity.this, "Network Error", Toast.LENGTH_SHORT);
+                        }
+                    });
+                } else {
+                    Toast.makeText(this, "Invalid Email Address", Toast.LENGTH_LONG).show();
                 }
-
-                @Override
-                public void onFailure(Call<UserLogin> call, Throwable t) {
-                    Log.d("log-fail", t.getMessage());
-                    Toast.makeText(RegisterActivity.this, "invalid credentials", Toast.LENGTH_SHORT);
-                }
-            });
-
+            }
         }
     }
 

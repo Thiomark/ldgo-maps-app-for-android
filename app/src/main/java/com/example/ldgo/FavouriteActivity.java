@@ -58,8 +58,7 @@ public class FavouriteActivity extends AppCompatActivity {
         btnGoToHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(FavouriteActivity.this, MapsActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 

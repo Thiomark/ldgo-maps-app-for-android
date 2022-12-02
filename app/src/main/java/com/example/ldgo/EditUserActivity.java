@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ldgo.components.LoadingDialogBar;
 import com.example.ldgo.entities.User;
 import com.example.ldgo.utils.LdgoApi;
 import com.example.ldgo.utils.RetrofitClient;
@@ -28,11 +29,14 @@ public class EditUserActivity extends AppCompatActivity {
     private User user;
     CardView btnUpdateProfile;
     LdgoApi ldgoApi;
+    LoadingDialogBar loadingDialogBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_user);
+        loadingDialogBar = new LoadingDialogBar(this);
+        loadingDialogBar.ShowDialog("loading...");
 
         username = findViewById(R.id.username);
         email = findViewById(R.id.email);
@@ -82,9 +86,11 @@ public class EditUserActivity extends AppCompatActivity {
         email.setText(user.getEmail().toString());
         language.setText(user.getLanguage().toString());
         landmark.setText(user.getLandmark().toString());
+        loadingDialogBar.HideDialog();
     }
 
     private void updateUser(){
+        loadingDialogBar.ShowDialog("loading...");
         String newUsername = username.getText().toString();
         String newName = name.getText().toString();
         String newEmail = email.getText().toString();
@@ -117,7 +123,6 @@ public class EditUserActivity extends AppCompatActivity {
             public void onResponse(Call<User> call, Response<User> response) {
                 if (!response.isSuccessful()) {
                     Toast.makeText(EditUserActivity.this, response.message(), Toast.LENGTH_SHORT).show();
-                    Log.d("errrv", response.message());
                     return;
                 }
                 Toast.makeText(EditUserActivity.this, "profile updated", Toast.LENGTH_SHORT).show();

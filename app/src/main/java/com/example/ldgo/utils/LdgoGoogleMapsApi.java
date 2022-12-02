@@ -14,4 +14,7 @@ public interface LdgoGoogleMapsApi {
     Call<DistanceBetweenLocations> getDistanceBetweenLocations(@Query("units") String units,
                                                                @Query("destinations") String destinations,
                                                                @Query("origins") String origins);
+
+//    @GET("geocode/json?key=AIzaSyBPOr1V_ffIyE9VXuVvmAzHJlEEx5mykU4")
+//    Call<GeoLocations> getDistanceBetweenLocations(@Query("latlng") String longitudesLatitudes);
 }

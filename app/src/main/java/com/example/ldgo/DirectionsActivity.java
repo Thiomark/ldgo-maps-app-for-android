@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import com.example.ldgo.components.RecyclerAdapter;
 import com.example.ldgo.entities.Address;
 import com.example.ldgo.entities.FavouriteLocation;
+import com.example.ldgo.entities.User;
 import com.example.ldgo.requests.FavouriteLocationRequest;
 import com.example.ldgo.responses.DistanceBetweenLocations;
 import com.example.ldgo.responses.FavouriteLocationResponse;
@@ -109,9 +110,24 @@ import java.util.List;
 
 public class DirectionsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    User user;
     private GoogleMap mMap;
     private String TAG = "so47492459";
     private SharedPreferences sp;
+    private ArrayList<Address> fetchedSeaches = new ArrayList<>();
+    EditText originInput, destinationInput;
+    TextView timeItTakes, distanceTextView;
+    CardView startButton;
+
+    public String INITIAL_DESTINATION;
+    public String INITIAL_LONGITUDE;
+    public String INITIAL_LATITUDE;
+
+    public String FINAL_DESTINATION;
+    public String FINAL_LONGITUDE;
+    public String FINAL_LATITUDE;
+
+    LdgoGoogleMapsApi googleMapsApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,64 +138,166 @@ public class DirectionsActivity extends FragmentActivity implements OnMapReadyCa
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        googleMapsApi = RetrofitClient.getRetrofitInstance2().create(LdgoGoogleMapsApi.class);
+
         sp = getSharedPreferences("user", Context.MODE_PRIVATE);
+
+        Intent intent = getIntent();
+
+        fetchUser();
+
+        originInput = findViewById(R.id.origin);
+        destinationInput = findViewById(R.id.destination);
+
+        startButton = findViewById(R.id.startButton);
+
+        distanceTextView = findViewById(R.id.distanceTextView);
+        timeItTakes = findViewById(R.id.timeItTakes);
+
+        INITIAL_DESTINATION = intent.getStringExtra(MapsActivity.INITIAL_DESTINATION);
+        INITIAL_LONGITUDE = intent.getStringExtra(MapsActivity.INITIAL_LONGITUDE);
+        INITIAL_LATITUDE = intent.getStringExtra(MapsActivity.INITIAL_LATITUDE);
+
+        FINAL_DESTINATION = intent.getStringExtra(MapsActivity.FINAL_DESTINATION);
+        FINAL_LATITUDE = intent.getStringExtra(MapsActivity.FINAL_LATITUDE);
+        FINAL_LONGITUDE = intent.getStringExtra(MapsActivity.FINAL_LONGITUDE);
+
+        originInput.setText(INITIAL_DESTINATION);
+        destinationInput.setText(FINAL_DESTINATION);
+
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchForLocation();
+            }
+        });
+    }
+
+    public void searchForLocation() {
+        String myLocation;
+        String finalDestinationnn;
+
+        myLocation = originInput.getText().toString();
+        finalDestinationnn = destinationInput.getText().toString();
+
+        if(myLocation == null) {
+            myLocation = "Braamfontein, Johannesburg, 2017, South Africa";
+        }
+
+        if(finalDestinationnn == null) {
+            Bundle bundle = getIntent().getExtras();
+            finalDestinationnn = bundle.getString("finalDestination");
+        }
+        try{
+            String unit = user.getUseMetric() ? "metric" : "imperial";
+            Call<DistanceBetweenLocations> call = googleMapsApi.getDistanceBetweenLocations(unit , finalDestinationnn, myLocation);
+            String finalDestinationnn1 = finalDestinationnn;
+            call.enqueue(new Callback<DistanceBetweenLocations>() {
+                @Override
+                public void onResponse(Call<DistanceBetweenLocations> call, Response<DistanceBetweenLocations> response) {
+                    if (response.isSuccessful()){
+                        try{
+                            distanceTextView.setText(response.body().getRows().get(0).getElements().get(0).getDistance().getText());
+                            timeItTakes.setText(response.body().getRows().get(0).getElements().get(0).getDuration().getText());
+                            originInput.setText(response.body().getOrigin_addresses().get(0));
+                            destinationInput.setText(response.body().getDestination_addresses().get(0));
+                            getLocations(finalDestinationnn1, -33.9248685, 18.4240553);
+//                            searchForPlaceOnTheMap(response.body().getOrigin_addresses().get(0));
+                        }catch (Exception e){
+                            Toast.makeText(DirectionsActivity.this, "Not found", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DistanceBetweenLocations> call, Throwable t) {
+
+                }
+            });
+        }catch(Exception e){
+
+        }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        String jwt = sp.getString( "jwt", "");
+        Double finalLongitudes = Double.parseDouble(FINAL_LONGITUDE);
+        Double finalLatitudes = Double.parseDouble(FINAL_LATITUDE);
+        String finalDestination = FINAL_DESTINATION;
+        getLocations(finalDestination, finalLatitudes, finalLongitudes);
+    }
 
-        LatLng barcelona = new LatLng(41.385064,2.173403);
-        mMap.addMarker(new MarkerOptions().position(barcelona).title("Marker in Barcelona"));
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
+    }
 
-        LatLng madrid = new LatLng(40.416775,-3.70379);
-        mMap.addMarker(new MarkerOptions().position(madrid).title("Marker in Madrid"));
+    public void getLocations(String finalDestination, Double finalLatitudes, Double finalLongitudes){
+        double myLatitudes = Double.parseDouble(INITIAL_LATITUDE);
+        double myLongitude = Double.parseDouble(INITIAL_LONGITUDE);
+        String myLocation = INITIAL_DESTINATION;
 
-        LatLng zaragoza = new LatLng(41.648823,-0.889085);
-
-        //Define list to get all latlng for the route
-        List<LatLng> path = new ArrayList<>();
-
-
-        //Execute Directions API request
-        GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey("AIzaSyBPOr1V_ffIyE9VXuVvmAzHJlEEx5mykU4")
-                .build();
-        DirectionsApiRequest req = DirectionsApi.getDirections(context, "41.385064,2.173403", "40.416775,-3.70379");
         try {
-            DirectionsResult res = req.await();
+            showLocationOnMaps(myLocation, myLongitude, myLatitudes, finalDestination, finalLatitudes, finalLongitudes);
+        }catch (Exception e) {
+        }
+    }
 
-            //Loop through legs and steps to get encoded polylines of each step
-            if (res.routes != null && res.routes.length > 0) {
-                DirectionsRoute route = res.routes[0];
+    public void showLocationOnMaps(String myLocation, Double myLongitude, Double myLatitudes, String finalDestination, Double finalLatitudes, Double finalLongitudes){
+        try{
+            LatLng barcelona = new LatLng(myLatitudes, myLongitude);
+            mMap.addMarker(new MarkerOptions().position(barcelona).title(myLocation));
 
-                if (route.legs !=null) {
-                    for(int i=0; i<route.legs.length; i++) {
-                        DirectionsLeg leg = route.legs[i];
-                        if (leg.steps != null) {
-                            for (int j=0; j<leg.steps.length;j++){
-                                DirectionsStep step = leg.steps[j];
-                                if (step.steps != null && step.steps.length >0) {
-                                    for (int k=0; k<step.steps.length;k++){
-                                        DirectionsStep step1 = step.steps[k];
-                                        EncodedPolyline points1 = step1.polyline;
-                                        if (points1 != null) {
-                                            //Decode polyline and add points to list of route coordinates
-                                            List<com.google.maps.model.LatLng> coords1 = points1.decodePath();
-                                            for (com.google.maps.model.LatLng coord1 : coords1) {
-                                                path.add(new LatLng(coord1.lat, coord1.lng));
+            LatLng madrid = new LatLng(finalLatitudes, finalLongitudes);
+            mMap.addMarker(new MarkerOptions().position(madrid).title(finalDestination));
+
+            LatLng zaragoza = new LatLng(-29.085214, 26.1595761);
+
+
+            //Define list to get all latlng for the route
+            List<LatLng> path = new ArrayList<>();
+
+
+            //Execute Directions API request
+            GeoApiContext context = new GeoApiContext.Builder()
+                    .apiKey("AIzaSyBPOr1V_ffIyE9VXuVvmAzHJlEEx5mykU4")
+                    .build();
+            DirectionsApiRequest req = DirectionsApi.getDirections(context, myLocation, finalDestination);
+            try {
+                DirectionsResult res = req.await();
+
+                //Loop through legs and steps to get encoded polylines of each step
+                if (res.routes != null && res.routes.length > 0) {
+                    DirectionsRoute route = res.routes[0];
+
+                    if (route.legs !=null) {
+                        for(int i=0; i<route.legs.length; i++) {
+                            DirectionsLeg leg = route.legs[i];
+                            if (leg.steps != null) {
+                                for (int j=0; j<leg.steps.length;j++){
+                                    DirectionsStep step = leg.steps[j];
+                                    if (step.steps != null && step.steps.length >0) {
+                                        for (int k=0; k<step.steps.length;k++){
+                                            DirectionsStep step1 = step.steps[k];
+                                            EncodedPolyline points1 = step1.polyline;
+                                            if (points1 != null) {
+                                                //Decode polyline and add points to list of route coordinates
+                                                List<com.google.maps.model.LatLng> coords1 = points1.decodePath();
+                                                for (com.google.maps.model.LatLng coord1 : coords1) {
+                                                    path.add(new LatLng(coord1.lat, coord1.lng));
+                                                }
                                             }
                                         }
-                                    }
-                                } else {
-                                    EncodedPolyline points = step.polyline;
-                                    if (points != null) {
-                                        //Decode polyline and add points to list of route coordinates
-                                        List<com.google.maps.model.LatLng> coords = points.decodePath();
-                                        for (com.google.maps.model.LatLng coord : coords) {
-                                            path.add(new LatLng(coord.lat, coord.lng));
+                                    } else {
+                                        EncodedPolyline points = step.polyline;
+                                        if (points != null) {
+                                            //Decode polyline and add points to list of route coordinates
+                                            List<com.google.maps.model.LatLng> coords = points.decodePath();
+                                            for (com.google.maps.model.LatLng coord : coords) {
+                                                path.add(new LatLng(coord.lat, coord.lng));
+                                            }
                                         }
                                     }
                                 }
@@ -187,24 +305,55 @@ public class DirectionsActivity extends FragmentActivity implements OnMapReadyCa
                         }
                     }
                 }
+            } catch(Exception ex) {
+                Log.e(TAG, ex.getLocalizedMessage());
             }
-        } catch(Exception ex) {
-            Log.e(TAG, ex.getLocalizedMessage());
-        }
 
-        //Draw the polyline
-        if (path.size() > 0) {
-            PolylineOptions opts = new PolylineOptions().addAll(path).color(Color.BLUE).width(5);
-            mMap.addPolyline(opts);
-        }
+            //Draw the polyline
+            if (path.size() > 0) {
+                PolylineOptions opts = new PolylineOptions().addAll(path).color(Color.BLUE).width(5);
+                mMap.addPolyline(opts);
+            }
 
-        mMap.getUiSettings().setZoomControlsEnabled(true);
+            mMap.getUiSettings().setZoomControlsEnabled(true);
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(zaragoza, 6));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(zaragoza, 8));
+        }catch(Exception e) {}
     }
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-        super.onPointerCaptureChanged(hasCapture);
+    private void searchForPlaceOnTheMap(String input) {
+        Call<SearchesResponse> call = googleMapsApi.searchForPlace(input);
+        call.enqueue(new Callback<SearchesResponse>() {
+            @Override
+            public void onResponse(Call<SearchesResponse> call, Response<SearchesResponse> response) {
+                if(response.isSuccessful()){
+                    fetchedSeaches = response.body().getResults();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SearchesResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void fetchUser () {
+        LdgoApi ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
+        String userID = sp.getString( "userID", "");
+        Call<User> call = ldgoApi.getUser(userID);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    user = response.body();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
     }
 }

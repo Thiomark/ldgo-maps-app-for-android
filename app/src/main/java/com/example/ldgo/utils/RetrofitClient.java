@@ -24,7 +24,7 @@ public class RetrofitClient {
     private static SharedPreferences sp;
 
     public static Retrofit getRetrofitInstance(){
-        String BASE_URL = "https://ldgo-api.herokuapp.com/api/";
+        String BASE_URL = "https://75e1-41-13-12-9.eu.ngrok.io/api/";
         return logic(BASE_URL);
     }
 

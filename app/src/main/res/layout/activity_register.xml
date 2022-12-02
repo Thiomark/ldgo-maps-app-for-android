@@ -53,27 +53,6 @@
                 android:paddingHorizontal="20dp"
                 android:textSize="14dp"
                 android:paddingVertical="14dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Email"
-                android:layout_marginTop="10dp"
-                android:textColor="@color/black"
-                android:textSize="16dp"
-                android:textStyle="bold"
-                android:layout_marginBottom="10dp"
-                app:layout_constraintVertical_bias="0.13" />
-            <EditText
-                android:id="@+id/inputEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/text_input"
-                android:ems="10"
-                android:hint="e.g. tony@avengers.com"
-                android:inputType="textPersonName"
-                android:paddingHorizontal="20dp"
-                android:textSize="14dp"
-                android:paddingVertical="14dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -97,7 +76,27 @@
                 android:hint="create a username"
                 android:inputType="textPersonName"
                  />
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/black"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintVertical_bias="0.13" />
+            <EditText
+                android:id="@+id/inputEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/text_input"
+                android:ems="10"
+                android:hint="e.g. tony@avengers.com"
+                android:inputType="textPersonName"
+                android:paddingHorizontal="20dp"
+                android:textSize="14dp"
+                android:paddingVertical="14dp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -114,7 +113,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/text_input"
                 android:ems="10"
-                android:hint="at least 8 characters"
+                android:hint="at least 6 characters"
                 android:inputType="textPassword"
                 android:paddingHorizontal="20dp"
                 android:textSize="14dp"

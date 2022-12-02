@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -63,12 +64,12 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/timeItTakes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginBottom="20dp"
-                    android:text="TextView"
+                    android:text=""
                     android:textColor="@color/black"
                     android:textSize="16dp"
                     android:textStyle="bold"
@@ -76,17 +77,17 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView6"
+                    android:id="@+id/distanceTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text="TextView"
+                    android:text=""
                     android:textColor="@color/black"
-                    android:textSize="14dp"
+                    android:textSize="16dp"
+                    android:layout_marginLeft="20dp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView4"
-                    app:layout_constraintStart_toEndOf="@+id/imageView2"
-                    app:layout_constraintTop_toTopOf="@+id/textView4" />
+                    app:layout_constraintBottom_toBottomOf="@+id/timeItTakes"
+                    app:layout_constraintStart_toEndOf="@+id/timeItTakes"
+                    app:layout_constraintTop_toTopOf="@+id/timeItTakes" />
 
                 <EditText
                     android:id="@+id/origin"
@@ -100,30 +101,19 @@
                     android:paddingHorizontal="20dp"
                     android:paddingVertical="14dp"
                     android:textSize="14dp"
-                    app:layout_constraintBottom_toTopOf="@+id/textView4"
+                    app:layout_constraintBottom_toTopOf="@+id/timeItTakes"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="25dp"
-                    android:background="@null"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView4"
-                    app:layout_constraintStart_toEndOf="@+id/textView4"
-                    app:layout_constraintTop_toTopOf="@+id/textView4"
-                    app:srcCompat="@drawable/ic_baseline_access_time_24" />
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/startButton"
                     android:layout_width="wrap_content"
                     app:cardBackgroundColor="@color/btn_gray"
                     app:cardCornerRadius="4sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView4"
+                    app:layout_constraintBottom_toBottomOf="@+id/timeItTakes"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView4"
+                    app:layout_constraintTop_toTopOf="@+id/timeItTakes"
                     android:layout_height="wrap_content">
                     <TextView
                         android:layout_width="match_parent"

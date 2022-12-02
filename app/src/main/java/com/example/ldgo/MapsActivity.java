@@ -2,7 +2,6 @@ package com.example.ldgo;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.Constraints;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,14 +13,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import com.example.ldgo.components.RecyclerAdapter;
 import com.example.ldgo.entities.Address;
 import com.example.ldgo.entities.FavouriteLocation;
 import com.example.ldgo.requests.FavouriteLocationRequest;
-import com.example.ldgo.responses.DistanceBetweenLocations;
 import com.example.ldgo.responses.FavouriteLocationResponse;
 import com.example.ldgo.responses.SearchesResponse;
 import com.example.ldgo.utils.LdgoApi;
@@ -91,6 +88,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<Address> fetchedSeaches = new ArrayList<>();
     private FavouriteLocation selectedLocation;
 
+    public static final String INITIAL_LONGITUDE = "INITIAL_LONGITUDE";
+    public static final String INITIAL_LATITUDE = "INITIAL_LATITUDE";
+    public static final String INITIAL_DESTINATION = "INITIAL_DESTINATION";
+
+    public static final String FINAL_LONGITUDE = "FINAL_LONGITUDE";
+    public static final String FINAL_LATITUDE = "FINAL_LATITUDE";
+    public static final String FINAL_DESTINATION = "FINAL_DESTINATION";
+
     EditText searchInputField;
     ImageButton goToProfile;
     RecyclerView recyclerViewSearches;
@@ -100,13 +105,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     ImageButton cancelBtn, goToFavourites;
     CardView locationSummaryCard, directionsSummaryCard, saveLocationBtn, directionsBtn;
     RecyclerAdapter adapter;
-    private SharedPreferences sp;
+    private SharedPreferences user_sp;
+    private SharedPreferences location_sp;
     LdgoApi ldgoApi;
     LdgoGoogleMapsApi googleMapsApi;
     double myLatitudes = -26.1952602;
     double myLongitude = 28.0337497;
-    double finalLongitudes = 28.0567007;
-    double finalLatitudes = -26.1075663;
 
     // Everything thing below is from the documention
 
@@ -181,7 +185,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         ldgoApi = RetrofitClient.getRetrofitInstance().create(LdgoApi.class);
         googleMapsApi = RetrofitClient.getRetrofitInstance2().create(LdgoGoogleMapsApi.class);
-        sp = getSharedPreferences("user", Context.MODE_PRIVATE);
+        user_sp = getSharedPreferences("user", Context.MODE_PRIVATE);
+        location_sp = getSharedPreferences("location", Context.MODE_PRIVATE);
 
         searchInputField.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -208,14 +213,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 try{
                     Intent in = new Intent(MapsActivity.this, DirectionsActivity.class);
-                    in.putExtra("myLongitude", myLongitude);
-                    in.putExtra("myLatitudes", myLatitudes);
-                    in.putExtra("finalLongitudes", finalLongitudes);
-                    in.putExtra("finalLatitudes", finalLatitudes);
+
+                    in.putExtra(INITIAL_LONGITUDE, "28.0337497");
+                    in.putExtra(INITIAL_LATITUDE, "-26.1952602");
+                    in.putExtra(INITIAL_DESTINATION, "Braamfontein, Johannesburg, 2017, South Africa");
+
+                    FavouriteLocationRequest favourite = new FavouriteLocationRequest(selectedLocation);
+
+                    in.putExtra(FINAL_LONGITUDE, favourite.getData().getLongitudes());
+                    in.putExtra(FINAL_LATITUDE, favourite.getData().getLatitudes());
+                    in.putExtra(FINAL_DESTINATION, favourite.getData().getFormatted_address());
+
                     startActivity(in);
 
                 }catch (Exception e) {
-                    Log.d("losc-r", e.getMessage());
+
                 }
             }
         });
@@ -231,8 +243,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
 
-                sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-                String jwt = sp.getString( "jwt", "");
+                user_sp = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+                String jwt = user_sp.getString( "jwt", "");
                 FavouriteLocationRequest favourite = new FavouriteLocationRequest(selectedLocation);
                 Call<FavouriteLocationResponse> call = ldgoApi.addFavouritesLocations(jwt, favourite);
                 call.enqueue(new Callback<FavouriteLocationResponse>() {
@@ -370,8 +382,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             lastKnownLocation = task.getResult();
                             if (lastKnownLocation != null) {
 
-                                myLatitudes = lastKnownLocation.getLatitude();
-                                myLongitude = lastKnownLocation.getLongitude();
+//                                myLatitudes = lastKnownLocation.getLatitude();
+//                                myLongitude = lastKnownLocation.getLongitude();
 
                                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                             }
