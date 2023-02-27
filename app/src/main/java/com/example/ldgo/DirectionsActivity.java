@@ -190,9 +190,6 @@ public class DirectionsActivity extends FragmentActivity implements OnMapReadyCa
                             timeItTakes.setText(response.body().getRows().get(0).getElements().get(0).getDuration().getText());
                             originInput.setText(response.body().getOrigin_addresses().get(0));
                             destinationInput.setText(response.body().getDestination_addresses().get(0));
-                            getLocations();
-//                            getLocations(finalDestination, -33.9248685, 18.4240553);
-//                            searchForPlaceOnTheMap(response.body().getOrigin_addresses().get(0));
                         }catch (Exception e){
                             Toast.makeText(DirectionsActivity.this, "Not found", Toast.LENGTH_SHORT).show();
                         }
@@ -304,7 +301,8 @@ public class DirectionsActivity extends FragmentActivity implements OnMapReadyCa
 
             mMap.getUiSettings().setZoomControlsEnabled(true);
 
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(barcelona, 8));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(barcelona, 14));
+            searchForLocation();
         }catch(Exception e) {}
     }
 
