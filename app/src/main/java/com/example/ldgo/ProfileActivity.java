@@ -95,9 +95,9 @@ public class ProfileActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
                             if (!response.isSuccessful()) {
-                                Toast.makeText(ProfileActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                                 return;
                             }
+                            Toast.makeText(ProfileActivity.this, "Settings Updated", Toast.LENGTH_SHORT).show();
                             setUser(response.body());
                         }
 

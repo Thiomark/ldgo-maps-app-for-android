@@ -251,7 +251,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onResponse(Call<FavouriteLocationResponse> call, Response<FavouriteLocationResponse> response) {
                         if(!response.isSuccessful()){
-                            Toast.makeText(MapsActivity.this, "Location not saved, something went wrong", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MapsActivity.this, "Location not saved, Already Added", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         Toast.makeText(MapsActivity.this, "Location Saved", Toast.LENGTH_SHORT).show();
@@ -388,8 +388,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                             }
                         } else {
-                            Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: %s", task.getException());
                             map.moveCamera(CameraUpdateFactory
                                     .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                             map.getUiSettings().setMyLocationButtonEnabled(false);
