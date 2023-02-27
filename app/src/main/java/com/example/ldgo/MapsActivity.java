@@ -585,8 +585,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onResponse(Call<SearchesResponse> call, Response<SearchesResponse> response) {
                 if(response.isSuccessful()){
-                    showLocationCard(response.body().getFirstFavouriteLocation());
-                    return;
+                    try{
+                        showLocationCard(response.body().getFirstFavouriteLocation());
+                        return;
+                    } catch (Exception e) {
+                        Toast.makeText(MapsActivity.this, "You must enable Billing on the Google Cloud Project", Toast.LENGTH_LONG).show();
+                        Log.e("clickerror", e.getMessage());
+                    }
                 }
             }
 
